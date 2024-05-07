@@ -1,10 +1,13 @@
-"use client"
+'use client'
 import { useEffect } from "react";
 import useSession from "./_lib/_hooks/useSession";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
+import { useCookies } from "react-cookie";
 
 export default function Home() {
+  const [removeCookie] = useCookies(['tokenInovateDocs']);
   const { user } = useSession()
+  const router = useRouter()
 
   if(!user){
     redirect('/entrar/bem-vindo')
@@ -22,6 +25,10 @@ export default function Home() {
     <main>
       {/* <p>{JSON.stringify(user)}</p> */}
       <p>Dashboard</p>
+      <button onClick={() => {
+          removeCookie.tokenInovateDocs
+          router.push('/entrar/bem-vindo')
+      }}>Logout</button>
     </main>
   );
 }

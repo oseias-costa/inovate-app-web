@@ -3,21 +3,40 @@ import Image from "next/image"
 import Logo from '@/public/auth/logo-clean.png'
 import ForgotPassword from '@/public/auth/forget-password.svg'
 import { Button, Input, Typography } from "antd"
-import { redirect, useRouter } from "next/navigation"
-import { Router } from "next/router"
-import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
-import useSession from "@/app/_lib/_hooks/useSession"
+import { useIsMutating, useMutation } from "@tanstack/react-query"
+import axios from "axios"
+import PulseLoader from 'react-spinners/PulseLoader'
 const { Title } = Typography
 
 export default function RecoveyPassword(){
   const [email, setEmail] = useState('')
-    const router = useRouter()
-    const { user } = useSession()
-    
-    if(user){
-      return redirect('/')
-    }
+  const [error, setError] = useState('')
+  const router = useRouter()
+
+    const postRecovery = async () => {
+      const response = await axios({
+        baseURL: "http://localhost:3009/users/recovery-password",
+        method: "POST",
+        data: { email: email }
+      })
+      return response.data
+  }
+
+  const isMutation = useIsMutating({ mutationKey: ['recovery-passord'], exact: true})
+
+    const mutate = useMutation({
+      mutationFn: postRecovery,
+      mutationKey: ['recovery-passord'],
+      onSuccess: () => {
+        return router.replace(`/entrar/verificar-codigo?email=${email}`)
+      },
+      onError: () => {
+        setError('O e-mail é inválido')
+      }
+    })
+
     return(
         <section style={styles.body}>
             <div style={styles.constainer}>
@@ -32,10 +51,28 @@ export default function RecoveyPassword(){
                           Você receberá um e-mail com um código de verificação no seu e-mail.
                         </Typography>
                         <Typography style={{fontWeight: 600, color: '#8c8c8c'}}>E-mail</Typography>
-                        <Input placeholder="E-mail" style={{marginBottom: 10}} onChange={(e) => setEmail(e.target.value)}/>
+                        <Input 
+                          status={error !== "" ? 'error' : ''} 
+                          placeholder="E-mail" 
+                          style={{marginBottom: 10}} 
+                          onChange={(e) => {
+                            if(error !== ''){
+                              setError('')
+                            }
+                            setEmail(e.target.value)
+                          }}
+                        />
                     </div>
                 </div>
-                <Button type="primary" style={{marginBottom: 5}}>Recuperar</Button>
+                <Button 
+                  type="primary" 
+                  style={{marginBottom: 5}} 
+                  onClick={() => !isMutation && mutate.mutate()}
+                >
+                 { isMutation 
+                    ? <PulseLoader  color="#fff" size={6} loading={true} /> 
+                    : 'Recuperar' }
+                </Button>
                 <Button type="link" onClick={() => router.back()}>Voltar</Button>
             </div>
         </section>

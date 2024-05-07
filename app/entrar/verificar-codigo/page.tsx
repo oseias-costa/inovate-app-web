@@ -3,25 +3,52 @@ import Image from "next/image"
 import Logo from '@/public/auth/logo-clean.png'
 import ForgotPassword from '@/public/auth/recovery-code.svg'
 import { Button, Input, Space, Typography, type GetProp } from 'antd';
-import { redirect, useRouter } from "next/navigation"
+import { redirect, useParams, useRouter, useSearchParams } from "next/navigation"
 import { useState } from "react";
 import useSession from "@/app/_lib/_hooks/useSession";
+import axios from "axios";
+import { useIsMutating, useMutation } from "@tanstack/react-query";
+import PulseLoader from "react-spinners/PulseLoader";
 const { Title } = Typography
 
 export default function VerifyCode(){
     const router = useRouter()
-    console.log('router', router)
     const [code, setCode] = useState(0)
+    const [error, setError] = useState('')
     const { user } = useSession()
+    const params = useSearchParams()
     
     if(user){
       return redirect('/')
     }
 
+    const postRecovery = async () => {
+      const response = await axios({
+        baseURL: "http://localhost:3009/users/check-code",
+        method: "POST",
+        data: { code: code, email: params.get('email') }
+      })
+      return response.data
+  }
+
+  const isMutation = useIsMutating({ mutationKey: ['verify-code'], exact: true})
+    const mutation = useMutation({
+      mutationFn: postRecovery,
+      mutationKey: ['verify-code'],
+      onSuccess: (data) => {
+        console.log(data)
+        return router.replace('/entrar/alterar-a-senha')
+      },
+      onError: () => {
+        setError('O código é inválido')
+      }
+    })
+
     const onChange: GetProp<typeof Input.OTP, 'onChange'> = (number) => {
+        if(error != '') setError('')
         setCode(Number(number))
       };
-    
+
       const sharedProps = {
         onChange,
       };
@@ -39,11 +66,18 @@ export default function VerifyCode(){
                             Informe abaixo o código enviado no seu e-mail.
                         </Typography>
                         <Space direction="vertical" style={{marginBottom: 10, textAlign: 'center'}}>
-                        <Input.OTP typeof="number" length={6} {...sharedProps} />
+                        <Input.OTP status={error !== "" ? 'error' : ''}  typeof="number" length={6} {...sharedProps} />
                         </Space>
                     </div>
                 </div>
-                <Button type="primary" style={{marginBottom: 5}} onClick={() => router.push('/entrar/')}>Verificar</Button>
+                <Button 
+                  type="primary" 
+                  style={{marginBottom: 5}} 
+                  onClick={() => !isMutation && mutation.mutate()}>
+                  { isMutation 
+                    ? <PulseLoader  color="#fff" size={6} loading={true} /> 
+                    : 'Verificar' }
+                </Button>
                 <Button type="link" onClick={() => router.back()}>Voltar</Button>
             </div>
         </section>
