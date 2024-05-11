@@ -1,20 +1,29 @@
+import { useQuery } from "@tanstack/react-query"
+import axios from "axios"
+import { redirect } from "next/navigation"
 import React, { useEffect } from "react"
-import useSession from "../_hooks/useSession"
+import { useCookies } from "react-cookie"
+import Cookies from 'js-cookie'
+
+type UserProps = {
+    createAt: string, 
+    email: string,
+    id: string,
+    name: string,
+    password: string,
+    reamlID: string,
+    status: "ACTIVE" | "INACTIVE",
+    type: "ADMIN" | "USER",
+    updateAt: string
+}
 
 export default function isAuth(Component: any){
     return function IsAuth(props: any) {
-        const { user } = useSession()
-        console.log(user)
-        // useEffect(() => {
-        //     if(!user) {
-        //        return redirect('/auth/login')
-        //     }
-        // },[])
+        const token = localStorage.getItem('token')
         
-        // if(!user){
-        //     return null
-        // }
-        
+        if(!token){
+            return redirect('/entrar/login')
+        }
         return <Component {...props} />
     }
 }

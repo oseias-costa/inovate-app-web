@@ -1,9 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import axios from "axios"
-import { useCookies } from "react-cookie"
 import { Dispatch, SetStateAction, useEffect, useState } from "react"
-import { encryptStorage } from "../_config/encryptStorage"
-
+import Cookies from 'js-cookie'
+import { redirect } from "next/navigation"
 type LoginData = {
     email: string,
     password: string
@@ -11,22 +10,26 @@ type LoginData = {
 
 export const useLoginMutation = (setError: Dispatch<SetStateAction<string>>) => {
     const [fetchToken, setFetchToken] = useState(false)
-    const [cookies, setCookie, removeCookie] = useCookies(['tokenInovateDocs']);
     const queryClient = useQueryClient()
+    const token = localStorage.getItem('token')
+
+    if(token){
+      return redirect('/portal/documentos')
+  }
     
-    const getUser = async () => {
-        if(cookies.tokenInovateDocs) {
-          console.log('fazendo get')
-             const response = await axios.get(`http://localhost:3009/users/${cookies.tokenInovateDocs['token']}`)
-             return response.data
+    // const getUser = async () => {
+    //     if(cookies.tokenInovate) {
+    //       console.log('fazendo get')
+    //          const response = await axios.get(`http://localhost:3009/users/${cookies.tokenInovate}`)
+    //          return response.data
 
-        }
-    }
+    //     }
+    // }
 
-    const { data: user, isLoading, isError, isSuccess } = useQuery({
-      queryKey: ['user'], 
-      queryFn: getUser
-    })
+    // const { data: user, isLoading, isError, isSuccess } = useQuery({
+    //   queryKey: ['user'], 
+    //   queryFn: getUser
+    // })
     
     const postData = async (data: LoginData) => {
         const response = await axios({
@@ -40,21 +43,17 @@ export const useLoginMutation = (setError: Dispatch<SetStateAction<string>>) => 
 
     const mutate = useMutation({
         mutationFn: postData,
-        mutationKey: ['user'],
+        mutationKey: ['login'],
         onSuccess: (data) => {
-          console.log(data)
-          setCookie('tokenInovateDocs', data)
+          console.log(data['token'])
+          localStorage.setItem('token', data['token'])
           setFetchToken(true)
-          console.log('chegou aqui?')
-          encryptStorage.setItem('userInovate', user)
-          const value = encryptStorage.getItem('userInovate');
-          console.log(value)
         },
         onError: () => {
-          removeCookie('tokenInovateDocs')
+          // removeCookie('tokenInovate')
           setError('E-mail ou senha incorretos')
         }
       })
 
-    return { mutate, fetchToken, user }
+    return { mutate, fetchToken }
 }

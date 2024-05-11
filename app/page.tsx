@@ -10,7 +10,8 @@ export default function Home() {
   const router = useRouter()
 
   if(!user){
-    redirect('/entrar/bem-vindo')
+    // redirect('/entrar/bem-vindo')
+    redirect('/dashboard')
   }
 
   useEffect(() => {

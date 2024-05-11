@@ -36,8 +36,9 @@ export default function VerifyCode(){
       mutationFn: postRecovery,
       mutationKey: ['verify-code'],
       onSuccess: (data) => {
-        console.log(data)
-        return router.replace('/entrar/alterar-a-senha')
+        
+        localStorage.setItem('update-password', data.token) 
+        return router.replace('/entrar/alterar-a-senha?email=' + params.get('email'))
       },
       onError: () => {
         setError('O código é inválido')

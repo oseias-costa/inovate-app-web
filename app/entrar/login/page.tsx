@@ -1,4 +1,4 @@
-"use client"
+'use client'
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Box, FormControl, IconButton, Input, InputAdornment, InputLabel, OutlinedInput, Paper, TextField } from "@mui/material";
 import Image from "next/image";
@@ -8,7 +8,7 @@ import LoginIlustration from '@/public/auth/login.svg'
 import { useLoginMutation } from "@/app/_lib/_hooks/useLoginMutation";
 import { redirect, useRouter } from "next/navigation";
 import { Button, Input as InputAnt, Typography, message } from 'antd';
-import useSession from "@/app/_lib/_hooks/useSession";
+import Cookies from 'js-cookie'
 
 export default function Login(){
     const [data, setData] = useState({ email: '', password: '' })
@@ -17,10 +17,23 @@ export default function Login(){
     const { mutate, fetchToken } = useLoginMutation(setError)
     const handleClickShowPassword = () => setShowPassword((show) => !show);
     const router = useRouter()
-    const { user } = useSession()
     
-    if(user){
-      return redirect('/')
+    // useEffect(() => {
+    //   if(token){
+    //     return redirect('/portal/documentos')
+    // }
+    // },[token])
+    
+    // useEffect(() => {
+    //   if(cookies.tokenInovate){
+    //       return redirect('/portal/documentos')
+    //   }
+    // },[cookies])
+    
+
+
+    if(mutate.isSuccess){
+      return redirect('/portal/documentos')
     }
     
     const [messageApi, contextHolder] = message?.useMessage();

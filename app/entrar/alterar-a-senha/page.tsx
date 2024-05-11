@@ -1,25 +1,62 @@
 "use client"
-import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { Box, FormControl, IconButton, Input, InputAdornment, InputLabel, OutlinedInput, Paper, TextField } from "@mui/material";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Logo from '@/public/auth/logo-clean.png'
-import LoginIlustration from '@/public/auth/login.svg'
-import { useLoginMutation } from "@/app/_lib/_hooks/useLoginMutation";
-import { redirect, useRouter } from "next/navigation";
-import { Button, Divider, Flex, Input as InputAnt, Space, Typography, type GetProp } from 'antd';
+import { redirect, useRouter, useSearchParams } from "next/navigation";
+import { Button, Input as InputAnt, Typography } from 'antd';
 import Title from "antd/es/typography/Title";
 import useSession from "@/app/_lib/_hooks/useSession";
+import { useIsMutating, useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import PulseLoader from "react-spinners/PulseLoader";
 
 export default function ChangePassword(){
-    const [data, setData] = useState({ email: '', password: '' })
+    const [data, setData] = useState({ password: '', passwordConfirmation: '' })
     const [showPassword, setShowPassword] = useState(false);
     const router = useRouter()
+    const [error, setError] = useState('')
+    const params = useSearchParams()
     const { user } = useSession()
+    const token = localStorage.getItem('update-password')
     
     if(user){
       return redirect('/')
     }
+
+    if(!token){
+      return redirect('/entrar/login')
+    }
+    const email = params.get('email')
+
+    const updatePassword = async () => {
+      const response = await axios({
+        baseURL: "http://localhost:3009/users/update-password",
+        method: "POST",
+        data: { 
+          email: email,
+          password: data.password,  
+          passwordConfirmation: data.passwordConfirmation,
+        },
+        headers: {
+          Authorization: "Bearer " + token,
+        }
+      })
+      return response.data
+  }
+
+  const isMutation = useIsMutating({ mutationKey: ['update-password'], exact: true})
+    const mutation = useMutation({
+      mutationFn: updatePassword,
+      mutationKey: ['update-password'],
+      onSuccess: () => {
+        
+        localStorage.removeItem('update-password') 
+        return router.replace('/entrar/login')
+      },
+      onError: () => {
+        setError('O código é inválido')
+      }
+    })
 
     return (
       <section style={styles.body}>
@@ -49,14 +86,18 @@ export default function ChangePassword(){
               visibilityToggle={{ visible: showPassword, onVisibleChange: setShowPassword}} 
               placeholder="Confirme a senha" 
               style={{marginBottom: '5px'}} 
-              onChange={(e) => setData({ ...data, password: e.target.value })}
+              onChange={(e) => setData({ ...data, passwordConfirmation  : e.target.value })}
             />
           </div>
             <Button
               type="primary" 
-              onClick={() => mutate.mutate(data)}
+              onClick={() => !isMutation && mutation.mutate()}
               style={{marginBottom: 5, marginTop: 15, width: '100%'}}
-              >Criar</Button>
+              >
+              { isMutation 
+                ? <PulseLoader  color="#fff" size={6} loading={true} /> 
+                : 'Verificar' }
+              </Button>
           </div>
       </section>
     );

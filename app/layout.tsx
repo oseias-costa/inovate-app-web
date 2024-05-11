@@ -6,15 +6,15 @@ import { AntdRegistry } from '@ant-design/nextjs-registry';
 import './globals.css'
 
 const lato = Lato({
-  weight: '300',
+  weight: ['100','300', "400", '700'],
   subsets: ['latin']
  });
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      // staleTime: 1000 * 60 * 60 * 24, // 24 hours
-      // refetchOnWindowFocus: false,
+      staleTime: 1000 * 60 * 60 * 24, // 24 hours
+      refetchOnWindowFocus: false,
       // refetchOnMount: false,
       // retry: 1,
     },
