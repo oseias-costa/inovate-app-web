@@ -6,6 +6,8 @@ import locale from "antd/locale/pt_BR";
 import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br'
 import SelectCompany from "./SelectCompany";
+import useGetUser from "../_hooks/useGetUser";
+import { useQueryClient } from "@tanstack/react-query";
 
 type DrawerComponentProps =  {
     open: boolean, 
@@ -13,15 +15,45 @@ type DrawerComponentProps =  {
 }
 
 export default function DrawerComponent({ open, setOpen }:DrawerComponentProps){
-    dayjs.locale('pt-br')
+    const [user, setUser] = useState({
+        createAt: "",
+        email: "",
+        id: "",
+        name: "",
+        password: "",
+        reamlID: "",
+        status: "",
+        type: "",
+        updateAt: ""
+    })
+    const [companys, setCompanys] = useState('')
+    const [request, setRequest] = useState({
+        requesterId: '',
+        companyId: companys,
+        document: "",
+        description: "",
+        realmId: '',
+        expiration: "",
+    })
+    // const { user } = useGetUser()
+    const queryClient = useQueryClient()
     const onChange: DatePickerProps['onChange'] = (date, dateString) => {
         console.log(date, dateString);
-      };
-      
+    };
+    const getUser = queryClient.getQueriesData({queryKey: ['user']})[0][1]
+    useEffect(() => {
+        console.log(typeof getUser)
+        setUser(getUser)
+        setRequest({
+            ...request,
+            realmId: getUser?.reamlID,
+            requesterId: user?.id
+        })
+    },[getUser])
 
-    const showDrawer = () => {
-        setOpen(true)
-    }
+    console.log('request', getUser)
+    dayjs.locale('pt-br')
+
 
     const onClose = () => {
         setOpen(false)
@@ -48,16 +80,17 @@ export default function DrawerComponent({ open, setOpen }:DrawerComponentProps){
                                 label='Empresa'
                                 rules={[{required: true, message: 'Coloque seu Nome'}]}
                             >
-                                <SelectCompany />
+                                <SelectCompany setCompanys={setCompanys} />
                             </Form.Item>
                         </Col>
                         <Col span={12}>
                             <Form.Item
-                                name='lastName'
+                                name='requester'
                                 label='Solicitante'
+                                initialValue={user?.name}
                                 rules={[{required: true, message: 'Coloque seu Sobrenome'}]}
                             >
-                                <Input placeholder="Coloque seu Sobrenome" />
+                                <Input placeholder="Coloque seu Sobrenome" disabled />
                             </Form.Item>
                         </Col>
                     </Row>
@@ -68,7 +101,7 @@ export default function DrawerComponent({ open, setOpen }:DrawerComponentProps){
                                     label='Documento'
                                     rules={[{required: true, message: 'Coloque seu Sobrenome'}]}
                                 >
-                                    <Input value={'Leonardo Borilli'}  disabled/>
+                                    <Input />
                                 </Form.Item>
                         </Col>
                         <Col span={12}>
@@ -82,7 +115,6 @@ export default function DrawerComponent({ open, setOpen }:DrawerComponentProps){
                                 name='lastName'
                                 label='Descrição'
                                 rules={[{required: true, message: 'Coloque seu Sobrenome'}]}
-                                initialValue='Leonardo Borilli'
                             >
                                 <TextArea
                                     placeholder="Autosize height with minimum and maximum number of lines"

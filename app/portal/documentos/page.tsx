@@ -5,10 +5,12 @@ import { Button, Select, Tabs, TabsProps } from "antd"
 import TableAnt from "@/app/_lib/_components/TableAnt"
 import Drawer from "@/app/_lib/_components/Drawer"
 import { useEffect, useState } from "react"
-import { useCookies } from "react-cookie"
-import { redirect } from "next/navigation"
+import { useQuery } from "@tanstack/react-query"
+import axios from "axios"
+import useGetUser from "@/app/_lib/_hooks/useGetUser"
 
 const Documents = () => {
+    const { user } = useGetUser()
     const [openDrawer, setOpenDrawer] = useState(false)
     const handleChange = (value: string) => {
         console.log(`selected ${value}`);

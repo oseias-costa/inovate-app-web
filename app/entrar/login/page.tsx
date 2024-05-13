@@ -1,6 +1,4 @@
 'use client'
-import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { Box, FormControl, IconButton, Input, InputAdornment, InputLabel, OutlinedInput, Paper, TextField } from "@mui/material";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import Logo from '@/public/auth/logo-clean.png'
@@ -8,7 +6,8 @@ import LoginIlustration from '@/public/auth/login.svg'
 import { useLoginMutation } from "@/app/_lib/_hooks/useLoginMutation";
 import { redirect, useRouter } from "next/navigation";
 import { Button, Input as InputAnt, Typography, message } from 'antd';
-import Cookies from 'js-cookie'
+import PulseLoader from "react-spinners/PulseLoader";
+import { useIsMutating } from "@tanstack/react-query";
 
 export default function Login(){
     const [data, setData] = useState({ email: '', password: '' })
@@ -17,21 +16,8 @@ export default function Login(){
     const { mutate, fetchToken } = useLoginMutation(setError)
     const handleClickShowPassword = () => setShowPassword((show) => !show);
     const router = useRouter()
-    
-    // useEffect(() => {
-    //   if(token){
-    //     return redirect('/portal/documentos')
-    // }
-    // },[token])
-    
-    // useEffect(() => {
-    //   if(cookies.tokenInovate){
-    //       return redirect('/portal/documentos')
-    //   }
-    // },[cookies])
-    
 
-
+    const isMutation = useIsMutating({ mutationKey: ['login'], exact: true})
     if(mutate.isSuccess){
       return redirect('/portal/documentos')
     }
@@ -90,7 +76,11 @@ export default function Login(){
               type="primary" 
               onClick={() => mutate.mutate(data)}
               style={{marginBottom: 5, marginTop: 5, width: '100%'}}
-              >Entrar</Button>
+              >
+                { isMutation 
+                    ? <PulseLoader  color="#fff" size={6} loading={true} /> 
+                    : 'Entrar' }
+              </Button>
             <Button type="link" onClick={() => router.push('/entrar/selecione')}>Voltar</Button>
           </div>
       </section>

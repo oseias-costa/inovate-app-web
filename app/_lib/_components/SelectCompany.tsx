@@ -1,42 +1,48 @@
+import { useQuery } from "@tanstack/react-query";
 import { Select } from "antd";
+import axios from "axios";
+import { Dispatch, SetStateAction } from "react";
 
-export default function SelectCompany(){
+type Options = {
+    value: string,
+    label: string
+}
+
+type SelectCompanyProps = {
+    setCompanys: Dispatch<SetStateAction<string>>
+}
+
+export default function SelectCompany({setCompanys}: SelectCompanyProps){
+    const getCompanys = async () => {
+        const companys =  await axios({
+            method: 'GET',
+            baseURL: 'http://localhost:3009/users/companys',
+            headers: { Authorization: `Bearer ${localStorage.getItem('token')}`}
+        })
+
+        return companys.data
+    }
+
+    const {data} = useQuery({
+        queryKey: ['companys'],
+        queryFn: getCompanys
+    })
+    let options: Options[] = []
+    const convertData = data?.map((item: any) => 
+        options.push({value: item.id, label: item.name}))
+
     return(
             <Select
                 showSearch
                 style={{ width: '100%' }}
                 placeholder="Selecione a Empresa"
                 optionFilterProp="children"
+                onSelect={(value) => setCompanys(value)}
                 filterOption={(input, option) => (option?.label ?? '').includes(input)}
                 filterSort={(optionA, optionB) =>
                 (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
                 }
-                options={[
-                {
-                    value: '1',
-                    label: 'Ampla',
-                },
-                {
-                    value: '2',
-                    label: 'Prefeitura de Tapejara',
-                },
-                {
-                    value: '3',
-                    label: 'Ecoadubos',
-                },
-                {
-                    value: '4',
-                    label: 'Metasa',
-                },
-                {
-                    value: '5',
-                    label: 'Schio',
-                },
-                {
-                    value: '6',
-                    label: 'Brasil',
-                },
-                ]}
+                options={options}
             />
         )
     }

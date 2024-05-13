@@ -17,20 +17,6 @@ export const useLoginMutation = (setError: Dispatch<SetStateAction<string>>) => 
       return redirect('/portal/documentos')
   }
     
-    // const getUser = async () => {
-    //     if(cookies.tokenInovate) {
-    //       console.log('fazendo get')
-    //          const response = await axios.get(`http://localhost:3009/users/${cookies.tokenInovate}`)
-    //          return response.data
-
-    //     }
-    // }
-
-    // const { data: user, isLoading, isError, isSuccess } = useQuery({
-    //   queryKey: ['user'], 
-    //   queryFn: getUser
-    // })
-    
     const postData = async (data: LoginData) => {
         const response = await axios({
           baseURL: "http://localhost:3009/users/login",
@@ -45,7 +31,6 @@ export const useLoginMutation = (setError: Dispatch<SetStateAction<string>>) => 
         mutationFn: postData,
         mutationKey: ['login'],
         onSuccess: (data) => {
-          console.log(data['token'])
           localStorage.setItem('token', data['token'])
           setFetchToken(true)
         },
