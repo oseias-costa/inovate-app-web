@@ -100,7 +100,7 @@ const Documents = () => {
             />
             <Button type="primary" disabled style={{marginLeft: 10}}>Filtrar</Button>
             <Button type="default" style={{marginLeft: 5}}>Limpar</Button>
-            <Button type="primary" style={{marginLeft: 10}} onClick={() => setOpenDrawer(true)}>Nova Solicitação</Button>
+            <Button type="primary" style={{marginLeft: 'auto'}} onClick={() => setOpenDrawer(true)}>Nova Solicitação</Button>
             </div>
             <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
             <Drawer open={openDrawer} setOpen={setOpenDrawer} />

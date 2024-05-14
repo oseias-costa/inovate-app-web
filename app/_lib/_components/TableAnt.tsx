@@ -1,6 +1,9 @@
 import React from 'react';
 import { Space, Table, Tag } from 'antd';
 import type { TableProps } from 'antd';
+import axios from 'axios';
+import { useQuery } from '@tanstack/react-query';
+import { Document } from '../types/document.type';
 
 interface DataType {
   key: string;
@@ -105,6 +108,33 @@ const data: DataType[] = [
   },
 ];
 
-const TableAnt: React.FC = () => <Table columns={columns} dataSource={data} style={{width: 'calc(100vw - 326px)'}} />;
+const TableAnt: React.FC = () => { 
+  const getDocuments = async () => {
+    const documents =  await axios({
+        method: 'GET',
+        baseURL: 'http://localhost:3009/document',
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}`}
+    })
+
+    return documents.data
+}
+
+const { data: docs, isLoading } = useQuery<Document[]>({
+    queryKey: ['documents'],
+    queryFn: getDocuments
+})
+let options: DataType[] = []
+const convertData = docs?.map((item: any) => {
+  console.log(item)
+  options.push({key: item.id, company: item.companyId, document: item.document, age: item.expiration, status: [item.status]})})
+console.log(options)
+
+  return(
+    <Table 
+      columns={columns} 
+      dataSource={options} 
+      style={{width: 'calc(100vw - 326px)'}} 
+    />
+)};
 
 export default TableAnt;

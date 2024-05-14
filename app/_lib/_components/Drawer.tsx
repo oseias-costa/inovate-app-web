@@ -61,11 +61,11 @@ export default function DrawerComponent({ open, setOpen }:DrawerComponentProps){
         return response.data
     }
   
-    const isMutation = useIsMutating({ mutationKey: ['create-request'], exact: true})
+    const isMutation = useIsMutating({ mutationKey: ['documents'], exact: true})
   
       const mutation = useMutation({
         mutationFn: postRecovery,
-        mutationKey: ['create-request'],
+        mutationKey: ['documents'],
         onSuccess: () => {
           return onClose()
         },
