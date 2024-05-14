@@ -1,17 +1,15 @@
 'use client'
 import { useEffect } from "react";
-import useSession from "./_lib/_hooks/useSession";
 import { redirect, useRouter } from "next/navigation";
 import { useCookies } from "react-cookie";
 
 export default function Home() {
   const [removeCookie] = useCookies(['tokenInovateDocs']);
-  const { user } = useSession()
+  const user = localStorage.getItem('token')
   const router = useRouter()
 
   if(!user){
-    // redirect('/entrar/bem-vindo')
-    redirect('/portal/documentos')
+    redirect('/entrar/bem-vindo')
   }
 
   useEffect(() => {

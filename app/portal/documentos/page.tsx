@@ -4,9 +4,7 @@ import Title from "antd/es/typography/Title"
 import { Button, Select, Tabs, TabsProps } from "antd"
 import TableAnt from "@/app/_lib/_components/TableAnt"
 import Drawer from "@/app/_lib/_components/Drawer"
-import { useEffect, useState } from "react"
-import { useQuery } from "@tanstack/react-query"
-import axios from "axios"
+import { useState } from "react"
 import useGetUser from "@/app/_lib/_hooks/useGetUser"
 
 const Documents = () => {
