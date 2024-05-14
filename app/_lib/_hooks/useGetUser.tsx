@@ -24,10 +24,16 @@ export default function useGetUser(){
         return user.data
     }
   
-    const { data } = useQuery<User>({
+    const { data, isError, error } = useQuery<User>({
         queryKey: ['user'],
         queryFn: getUser
     })
+
+    if(isError){
+        if(error.message === 'Request failed with status code 401'){
+            localStorage.removeItem('token')
+        }
+    }
 
     return {user: data}
 }

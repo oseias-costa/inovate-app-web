@@ -16,6 +16,8 @@ const Documents = () => {
         console.log(`selected ${value}`);
     };
 
+    console.log('user na page', user)
+
     const onChange = (key: string) => {
         console.log(key);
       };

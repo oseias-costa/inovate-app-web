@@ -11,7 +11,7 @@ export default function Home() {
 
   if(!user){
     // redirect('/entrar/bem-vindo')
-    redirect('/dashboard')
+    redirect('/portal/documentos')
   }
 
   useEffect(() => {

@@ -1,5 +1,5 @@
 "use client"
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react"
+import React, { SetStateAction, useEffect, useState } from "react"
 import { Button, Col, ConfigProvider, DatePicker, DatePickerProps, Drawer, Form, Input, Row, Space} from 'antd'
 import TextArea from "antd/es/input/TextArea";
 import locale from "antd/locale/pt_BR";
@@ -7,7 +7,9 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br'
 import SelectCompany from "./SelectCompany";
 import useGetUser from "../_hooks/useGetUser";
-import { useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
+import { useIsMutating, useMutation } from "@tanstack/react-query";
+import PulseLoader from "react-spinners/PulseLoader";
 
 type DrawerComponentProps =  {
     open: boolean, 
@@ -15,49 +17,62 @@ type DrawerComponentProps =  {
 }
 
 export default function DrawerComponent({ open, setOpen }:DrawerComponentProps){
-    const [user, setUser] = useState({
-        createAt: "",
-        email: "",
-        id: "",
-        name: "",
-        password: "",
-        reamlID: "",
-        status: "",
-        type: "",
-        updateAt: ""
-    })
     const [companys, setCompanys] = useState('')
+    console.log('companys', companys)
     const [request, setRequest] = useState({
         requesterId: '',
         companyId: companys,
         document: "",
         description: "",
         realmId: '',
-        expiration: "",
+        expiration: '',
     })
-    // const { user } = useGetUser()
-    const queryClient = useQueryClient()
+    const { user } = useGetUser()
     const onChange: DatePickerProps['onChange'] = (date, dateString) => {
         console.log(date, dateString);
+        const d = new Date()
+        console.log(d)
+        setRequest({...request, expiration: String(d)})
     };
-    const getUser = queryClient.getQueriesData({queryKey: ['user']})[0][1]
+
     useEffect(() => {
-        console.log(typeof getUser)
-        setUser(getUser)
+        console.log('typeof', user)
         setRequest({
             ...request,
-            realmId: getUser?.reamlID,
-            requesterId: user?.id
+            companyId: companys,
+            realmId: user? user.reamlID: '',
+            requesterId: user? user.id : ''
         })
-    },[getUser])
-
-    console.log('request', getUser)
-    dayjs.locale('pt-br')
-
+    },[user, companys])
 
     const onClose = () => {
         setOpen(false)
     }
+
+    dayjs.locale('pt-br')
+
+    const postRecovery = async () => {
+        const response = await axios({
+          baseURL: "http://localhost:3009/document/create-request",
+          method: "POST",
+          data: { ...request },
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}`}
+        })
+        return response.data
+    }
+  
+    const isMutation = useIsMutating({ mutationKey: ['create-request'], exact: true})
+  
+      const mutation = useMutation({
+        mutationFn: postRecovery,
+        mutationKey: ['create-request'],
+        onSuccess: () => {
+          return onClose()
+        },
+        onError: (err) => {
+          console.log(err)
+        }
+      })
 
     return(
         <Drawer 
@@ -69,7 +84,11 @@ export default function DrawerComponent({ open, setOpen }:DrawerComponentProps){
             extra={
                 <Space>
                     <Button onClick={onClose}>Cancelar</Button>
-                    <Button onClick={onClose} type='primary'>Criar</Button>
+                    <Button onClick={() => mutation.mutate()} type='primary'>
+                        { isMutation 
+                        ? <PulseLoader  color="#fff" size={6} loading={true} /> 
+                        : 'Criar' }
+                    </Button>
                 </Space>}
         >
                 <Form layout="vertical" hideRequiredMark>
@@ -101,7 +120,7 @@ export default function DrawerComponent({ open, setOpen }:DrawerComponentProps){
                                     label='Documento'
                                     rules={[{required: true, message: 'Coloque seu Sobrenome'}]}
                                 >
-                                    <Input />
+                                    <Input onChange={(e) => setRequest({...request, document: e.target.value})} />
                                 </Form.Item>
                         </Col>
                         <Col span={12}>
@@ -117,7 +136,8 @@ export default function DrawerComponent({ open, setOpen }:DrawerComponentProps){
                                 rules={[{required: true, message: 'Coloque seu Sobrenome'}]}
                             >
                                 <TextArea
-                                    placeholder="Autosize height with minimum and maximum number of lines"
+                                    onChange={(e) => setRequest({...request, description: e.target.value})} 
+                                    placeholder="Escreva uma descrição"
                                     autoSize={{ minRows: 2, maxRows: 6 }}
                                 /> 
                             </Form.Item>
