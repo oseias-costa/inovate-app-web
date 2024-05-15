@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Select } from "antd";
 import axios from "axios";
 import { Dispatch, SetStateAction } from "react";
+import useGetCompanys from "../_hooks/useGetCompanys";
 
 type Options = {
     value: string,
@@ -13,20 +14,7 @@ type SelectCompanyProps = {
 }
 
 export default function SelectCompany({setCompanys}: SelectCompanyProps){
-    const getCompanys = async () => {
-        const companys =  await axios({
-            method: 'GET',
-            baseURL: 'http://localhost:3009/users/companys',
-            headers: { Authorization: `Bearer ${localStorage.getItem('token')}`}
-        })
-
-        return companys.data
-    }
-
-    const {data} = useQuery({
-        queryKey: ['companys'],
-        queryFn: getCompanys
-    })
+    const {data} = useGetCompanys()
     let options: Options[] = []
     const convertData = data?.map((item: any) => 
         options.push({value: item.id, label: item.name}))

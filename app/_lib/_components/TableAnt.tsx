@@ -4,6 +4,7 @@ import type { TableProps } from 'antd';
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 import { Document } from '../types/document.type';
+import useGetCompanys from '../_hooks/useGetCompanys';
 
 interface DataType {
   key: string;
@@ -109,6 +110,8 @@ const data: DataType[] = [
 ];
 
 const TableAnt: React.FC = () => { 
+  const {data} = useGetCompanys()
+  console.log('novo hook', data)
   const getDocuments = async () => {
     const documents =  await axios({
         method: 'GET',
