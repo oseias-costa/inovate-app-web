@@ -1,10 +1,8 @@
 'use client'
 import { useEffect } from "react";
 import { redirect, useRouter } from "next/navigation";
-import { useCookies } from "react-cookie";
 
 export default function Home() {
-  const [removeCookie] = useCookies(['tokenInovateDocs']);
   const user = localStorage.getItem('token')
   const router = useRouter()
 

@@ -8,7 +8,7 @@ import 'dayjs/locale/pt-br'
 import SelectCompany from "./SelectCompany";
 import useGetUser from "../_hooks/useGetUser";
 import axios from "axios";
-import { useIsMutating, useMutation } from "@tanstack/react-query";
+import { useIsMutating, useMutation, useQueryClient } from "@tanstack/react-query";
 import PulseLoader from "react-spinners/PulseLoader";
 
 type DrawerComponentProps =  {
@@ -18,6 +18,7 @@ type DrawerComponentProps =  {
 
 export default function DrawerComponent({ open, setOpen }:DrawerComponentProps){
     const [companys, setCompanys] = useState('')
+    const queryClient = useQueryClient()
     console.log('companys', companys)
     const [request, setRequest] = useState({
         requesterId: '',
@@ -51,7 +52,7 @@ export default function DrawerComponent({ open, setOpen }:DrawerComponentProps){
 
     dayjs.locale('pt-br')
 
-    const postRecovery = async () => {
+    const postCreateDoc = async () => {
         const response = await axios({
           baseURL: "http://localhost:3009/document/create-request",
           method: "POST",
@@ -64,10 +65,10 @@ export default function DrawerComponent({ open, setOpen }:DrawerComponentProps){
     const isMutation = useIsMutating({ mutationKey: ['documents'], exact: true})
   
       const mutation = useMutation({
-        mutationFn: postRecovery,
-        mutationKey: ['documents'],
+        mutationFn: postCreateDoc,
         onSuccess: () => {
-          return onClose()
+        onClose()
+          return queryClient.invalidateQueries({ queryKey: ['documents']})
         },
         onError: (err) => {
           console.log(err)

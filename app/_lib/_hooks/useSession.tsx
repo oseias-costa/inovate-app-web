@@ -1,11 +1,9 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useEffect } from "react";
-import { useCookies } from "react-cookie";
 import { encryptStorage } from "../_config/encryptStorage";
 
 export default function useSession(){
-    const [cookies, setCookie, removeCookie] = useCookies(['tokenInovateDocs']);
     const user = encryptStorage.getItem('userInovate');
 
     if(user){

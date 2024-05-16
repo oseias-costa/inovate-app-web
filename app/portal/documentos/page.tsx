@@ -6,6 +6,7 @@ import TableAnt from "@/app/_lib/_components/TableAnt"
 import Drawer from "@/app/_lib/_components/Drawer"
 import { useState } from "react"
 import useGetUser from "@/app/_lib/_hooks/useGetUser"
+import DocumentDetails from "./utils/DocumentDetails"
 
 const Documents = () => {
     const { user } = useGetUser()
@@ -45,6 +46,7 @@ const Documents = () => {
       //color: '#00000E0'
     return (
       <div>
+
             <Title level={2} style={{textAlign: 'left', color: '#404040', fontWeight: 300}}>  
               Documentos
             </Title>

@@ -1,10 +1,11 @@
-import React from 'react';
-import { Space, Table, Tag } from 'antd';
+import React, { useState } from 'react';
+import { Button, Space, Table, Tag } from 'antd';
 import type { TableProps } from 'antd';
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 import { Document } from '../types/document.type';
 import useGetCompanys from '../_hooks/useGetCompanys';
+import DocumentDetails from '@/app/portal/documentos/utils/DocumentDetails';
 
 interface DataType {
   key: string;
@@ -13,56 +14,6 @@ interface DataType {
   age: string;
   status: string[];
 }
-
-const columns: TableProps<DataType>['columns'] = [
-  {
-    title: 'Empresa',
-    dataIndex: 'company',
-    key: 'company',
-    render: (v) => <p>{v}</p>
-  },
-  {
-    title: 'Documento',
-    dataIndex: 'document',
-    key: 'document',
-    render: (v) => <p>{v}</p>
-  },
-  {
-    title: 'Prazo',
-    dataIndex: 'age',
-    key: 'age',
-  },
-  {
-    title: 'Status',
-    key: 'status',
-    dataIndex: 'status',
-    render: (_, { status }) => (
-      <>
-        {status.map((status) => {
-          let color = status === 'pendente' ? 'geekblue' : 'green';
-          if (status === 'vencido') {
-            color = 'volcano';
-          }
-          return (
-            <Tag color={color} key={status}>
-              {status.toUpperCase()}
-            </Tag>
-          );
-        })}
-      </>
-    ),
-  },
-  {
-    title: 'Solicitante',
-    key: 'action',
-    render: (_, record) => (
-      <Space size="middle">
-        {/* <a>Invite {record.name}</a> */}
-        <a>Detalhes</a>
-      </Space>
-    ),
-  },
-];
 
 const data: DataType[] = [
   {
@@ -111,7 +62,61 @@ const data: DataType[] = [
 
 const TableAnt: React.FC = () => { 
   const {data} = useGetCompanys()
-  console.log('novo hook', data)
+  const [openDocumentDetais, setOpenDocumentDetais] = useState(false)
+  const [documentId, setDocumentId] = useState('')
+
+  const columns: TableProps<DataType>['columns'] = [
+    {
+      title: 'Empresa',
+      dataIndex: 'company',
+      key: 'company',
+      render: (v) => <p>{v}</p>
+    },
+    {
+      title: 'Documento',
+      dataIndex: 'document',
+      key: 'document',
+      render: (v) => <p>{v}</p>
+    },
+    {
+      title: 'Prazo',
+      dataIndex: 'age',
+      key: 'age',
+    },
+    {
+      title: 'Status',
+      key: 'status',
+      dataIndex: 'status',
+      render: (_, { status }) => (
+        <>
+          {status.map((status) => {
+            let color = status === 'pendente' ? 'geekblue' : 'green';
+            if (status === 'vencido') {
+              color = 'volcano';
+            }
+            return (
+              <Tag color={color} key={status}>
+                {status.toUpperCase()}
+              </Tag>
+            );
+          })}
+        </>
+      ),
+    },
+    {
+      title: 'Solicitante',
+      key: 'action',
+      render: (_, record) => (
+        <Space size="middle">
+          <Button type='dashed' onClick={() => {
+            setDocumentId(record.key)
+            setOpenDocumentDetais(true)
+          }}>Detalhes</Button>
+        </Space>
+      ),
+    },
+  ];
+
   const getDocuments = async () => {
     const documents =  await axios({
         method: 'GET',
@@ -133,11 +138,18 @@ const convertData = docs?.map((item: any) => {
 console.log(options)
 
   return(
-    <Table 
-      columns={columns} 
-      dataSource={options} 
-      style={{width: 'calc(100vw - 326px)'}} 
-    />
+    <>
+      <DocumentDetails 
+        open={openDocumentDetais} 
+        setOpen={setOpenDocumentDetais}  
+        id={documentId}
+            />
+      <Table 
+        columns={columns} 
+        dataSource={options} 
+        style={{width: 'calc(100vw - 326px)'}} 
+        />
+      </>
 )};
 
 export default TableAnt;
