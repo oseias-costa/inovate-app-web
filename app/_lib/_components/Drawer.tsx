@@ -50,8 +50,6 @@ export default function DrawerComponent({ open, setOpen }:DrawerComponentProps){
         setOpen(false)
     }
 
-    dayjs.locale('pt-br')
-
     const postCreateDoc = async () => {
         const response = await axios({
           baseURL: "http://localhost:3009/document/create-request",

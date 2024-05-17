@@ -7,13 +7,14 @@ import { Document } from '../types/document.type';
 import useGetCompanys from '../_hooks/useGetCompanys';
 import DocumentDetails from '@/app/portal/documentos/utils/DocumentDetails';
 import { Company } from '../types/company.type';
+import dayjs from 'dayjs';
 
 interface DataType {
   key: string;
   company: string;
   document: string;
   age: string;
-  status: string[];
+  status: string;
 }
 
 const data: DataType[] = [
@@ -22,45 +23,45 @@ const data: DataType[] = [
     company: 'Ampla',
     document: 'Contrato Social',
     age: '12/05/24',
-    status: ['pendente'],
+    status: 'EXPIRED',
   },
   {
     key: '2',
     company: 'Ecoadubos',
     document: 'Licença FEPAN',
     age: '14/05/24',
-    status: ['Concluído'],
+    status: 'FINISH',
   },
   {
     key: '3',
     company: 'Prefeitura de Tapejara',
     document: 'Documento exemplo',
     age: '20/05/24',
-    status: ['vencido'],
+    status: 'EXPIRED',
   },  
   {
     key: '4',
     company: 'Ampla',
     document: 'Contrato Social',
     age: '12/05/24',
-    status: ['pendente'],
+    status: 'PEDING',
   },
   {
     key: '5',
     company: 'Ecoadubos',
     document: 'Licença FEPAN',
     age: '14/05/24',
-    status: ['Concluído'],
+    status: 'FINISH',
   },
   {
     key: '6',
     company: 'Prefeitura de Tapejara',
     document: 'Documento exemplo',
     age: '20/05/24',
-    status: ['vencido'],
+    status: 'EXPIRED',
   },
 ];
-
+// 'EXPIRED' | 'PEDING' | 'FINISH'
 const TableAnt: React.FC = () => { 
   const {data} = useGetCompanys()
   const [openDocumentDetais, setOpenDocumentDetais] = useState(false)
@@ -88,26 +89,36 @@ const TableAnt: React.FC = () => {
       title: 'Prazo',
       dataIndex: 'age',
       key: 'age',
+      render: (v) => {
+        const date = dayjs(v).format('DD-MM-YYYY')
+        return <p>{date}</p>
+      }
     },
     {
       title: 'Status',
       key: 'status',
       dataIndex: 'status',
-      render: (_, { status }) => (
-        <>
-          {status.map((status) => {
-            let color = status === 'pendente' ? 'geekblue' : 'green';
-            if (status === 'vencido') {
-              color = 'volcano';
-            }
-            return (
-              <Tag color={color} key={status}>
-                {status.toUpperCase()}
-              </Tag>
-            );
-          })}
-        </>
-      ),
+      render: (status) => {
+        console.log('COLORRRRRRRR', status)
+        let color 
+         switch(status) {
+          case 'EXPIRED':
+            color = 'volcano'
+            break
+          case 'PEDING':
+            color = 'geekblue'
+            break
+          case 'FINISH':
+            color = 'green'
+            break
+         } 
+         console.log('COLORRRRRRRR', color)
+          return( 
+            <Tag color={color} key={status}>
+              {status}
+            </Tag>
+          )
+      }
     },
     {
       title: 'Solicitante',
@@ -141,7 +152,7 @@ const { data: docs, isLoading } = useQuery<Document[]>({
 let options: DataType[] = []
 const convertData = docs?.map((item: any) => {
   console.log(item)
-  options.push({key: item.id, company: item.companyId, document: item.document, age: item.expiration, status: [item.status]})})
+  options.push({key: item.id, company: item.companyId, document: item.document, age: item.expiration, status: item.status})})
 console.log(options)
 
   return(

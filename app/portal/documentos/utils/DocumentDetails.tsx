@@ -1,13 +1,13 @@
-import DrawerFC from "@/app/_lib/_components/DrawerFC";
 import { SetStateAction, useState } from "react";
-import { Col, ConfigProvider, DatePicker, Form, Input, Row } from 'antd'
+import { Button, Col, ConfigProvider, DatePicker, Drawer, Form, Input, Row, Space } from 'antd'
 import SelectCompany from "@/app/_lib/_components/SelectCompany";
-import { Document } from "@/app/_lib/types/document.type";
 import locale from "antd/locale/pt_BR";
 import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br'
 import TextArea from "antd/es/input/TextArea";
 import useGetDocumentDetails from "@/app/_lib/_hooks/useGetDocumentDetails";
+import { PulseLoader } from "react-spinners";
+import { useIsMutating } from "@tanstack/react-query";
 
 type DrawerComponentProps =  {
     open: boolean, 
@@ -17,24 +17,28 @@ type DrawerComponentProps =  {
 
 export default function DocumentDetails({open, setOpen, id}:DrawerComponentProps){
     const { data } = useGetDocumentDetails(id)
-
-    return(
-        <DrawerFC 
-            title="Detalhes"
-            buttonText="Editar"
-            isLoading={false}
-            onClick={() => console.log('onClick')}
-            open={open}
-            setOpen={setOpen}
-            children={data ? <ContentForm data={data} />: <p>Loading...</p>}
-        /> 
-    )
-}
-
-const ContentForm = ({data}: {data: Document}) => {
     const [companys, setCompanys] = useState('')
-    const date = dayjs(data.expiration)
+    const date = dayjs(data?.expiration)
+    const onClose = () => setOpen(false)
+    const isMutation = useIsMutating({ mutationKey: ['documents'], exact: true})
+
     return(
+        <Drawer 
+            title='Detalhes'
+            width={720}
+            onClose={onClose}
+            open={open}
+            styles={{ body: {paddingBottom: 80}}}
+            extra={
+                <Space>
+                    <Button onClick={onClose}>Cancelar</Button>
+                    <Button onClick={() => mutation.mutate()} type='primary'>
+                        { isMutation 
+                        ? <PulseLoader  color="#fff" size={6} loading={true} /> 
+                        : 'Editar' }
+                    </Button>
+                </Space>}
+        >
         <Form layout="vertical" hideRequiredMark>
         <Row gutter={16}>
             <Col span={12}>
@@ -91,5 +95,6 @@ const ContentForm = ({data}: {data: Document}) => {
             </Col>
         </Row>
     </Form>
+    </Drawer>
     )
 }
