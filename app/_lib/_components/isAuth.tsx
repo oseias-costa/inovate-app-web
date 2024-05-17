@@ -2,8 +2,6 @@ import { useQuery } from "@tanstack/react-query"
 import axios from "axios"
 import { redirect } from "next/navigation"
 import React, { useEffect } from "react"
-import { useCookies } from "react-cookie"
-import Cookies from 'js-cookie'
 
 type UserProps = {
     createAt: string, 
@@ -19,11 +17,31 @@ type UserProps = {
 
 export default function isAuth(Component: any){
     return function IsAuth(props: any) {
-        const token = localStorage.getItem('token')
+            const token = () => localStorage?.getItem('token')
+            if(!token){
+                return redirect('/entrar/login')
+            }
+
+            const getUser = async () => {
+                const user =  await axios({
+                    method: 'GET',
+                    baseURL: `http://localhost:3009/users/${localStorage.getItem('token')}`,
+                    headers: { Authorization: `Bearer ${localStorage.getItem('token')}`}
+                })
+          
+                return user.data
+            }
+          
+            const { data, isError, error } = useQuery<UserProps>({
+                queryKey: ['user'],
+                queryFn: getUser
+            })
+
+            if(isError){
+                localStorage.removeItem('token')
+                return redirect('/entrar/login')
+            }
         
-        if(!token){
-            return redirect('/entrar/login')
-        }
         return <Component {...props} />
     }
 }

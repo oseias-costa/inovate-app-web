@@ -10,14 +10,19 @@ type Options = {
 }
 
 type SelectCompanyProps = {
-    setCompanys: Dispatch<SetStateAction<string>>
+    setCompanys: Dispatch<SetStateAction<string>>,
+    value?: string
 }
 
-export default function SelectCompany({setCompanys}: SelectCompanyProps){
+export default function SelectCompany({setCompanys, value}: SelectCompanyProps){
     const {data} = useGetCompanys()
     let options: Options[] = []
-    const convertData = data?.map((item: any) => 
-        options.push({value: item.id, label: item.name}))
+    if(value){
+        options.push({value: '1', label: value})
+    } else {
+        const convertData = data?.map((item: any) => 
+            options.push({value: item.id, label: item.name}))
+    }
 
     return(
             <Select

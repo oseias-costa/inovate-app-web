@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { Button, Space, Table, Tag } from 'antd';
 import type { TableProps } from 'antd';
 import axios from 'axios';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Document } from '../types/document.type';
 import useGetCompanys from '../_hooks/useGetCompanys';
 import DocumentDetails from '@/app/portal/documentos/utils/DocumentDetails';
+import { Company } from '../types/company.type';
 
 interface DataType {
   key: string;
@@ -64,13 +65,18 @@ const TableAnt: React.FC = () => {
   const {data} = useGetCompanys()
   const [openDocumentDetais, setOpenDocumentDetais] = useState(false)
   const [documentId, setDocumentId] = useState('')
+  const queryClient = useQueryClient()
+  const {data: companys} = useGetCompanys()
 
   const columns: TableProps<DataType>['columns'] = [
     {
       title: 'Empresa',
       dataIndex: 'company',
       key: 'company',
-      render: (v) => <p>{v}</p>
+      render:  (id) => {
+        const company = companys?.filter((item: Company) => item.id === id)[0] 
+        return <p>{company?.name}</p>
+      }
     },
     {
       title: 'Documento',
@@ -108,9 +114,10 @@ const TableAnt: React.FC = () => {
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
-          <Button type='dashed' onClick={() => {
+          <Button type='text' style={{color: '#1677ff'}} onClick={() => {
             setDocumentId(record.key)
             setOpenDocumentDetais(true)
+            return queryClient.invalidateQueries({queryKey: ['document-detail']})
           }}>Detalhes</Button>
         </Space>
       ),

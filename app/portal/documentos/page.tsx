@@ -6,7 +6,6 @@ import TableAnt from "@/app/_lib/_components/TableAnt"
 import Drawer from "@/app/_lib/_components/Drawer"
 import { useState } from "react"
 import useGetUser from "@/app/_lib/_hooks/useGetUser"
-import DocumentDetails from "./utils/DocumentDetails"
 
 const Documents = () => {
     const { user } = useGetUser()

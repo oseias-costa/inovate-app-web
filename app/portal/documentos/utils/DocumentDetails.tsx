@@ -1,9 +1,13 @@
 import DrawerFC from "@/app/_lib/_components/DrawerFC";
-import { SetStateAction } from "react";
-import { Button, Col, ConfigProvider, DatePicker, DatePickerProps, Drawer, Form, Input, Row, Space} from 'antd'
+import { SetStateAction, useState } from "react";
+import { Col, ConfigProvider, DatePicker, Form, Input, Row } from 'antd'
 import SelectCompany from "@/app/_lib/_components/SelectCompany";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import { Document } from "@/app/_lib/types/document.type";
+import locale from "antd/locale/pt_BR";
+import dayjs from 'dayjs';
+import 'dayjs/locale/pt-br'
+import TextArea from "antd/es/input/TextArea";
+import useGetDocumentDetails from "@/app/_lib/_hooks/useGetDocumentDetails";
 
 type DrawerComponentProps =  {
     open: boolean, 
@@ -12,37 +16,24 @@ type DrawerComponentProps =  {
 }
 
 export default function DocumentDetails({open, setOpen, id}:DrawerComponentProps){
-    console.log(id)
-    const {data} = useQuery({
-        queryFn: async () => {
-            const url = `http://localhost:3009/document/${id}`
-            const document = await axios({
-                baseURL: url,
-                method: 'GET',
-                headers: { Authorization: `Bearer ${localStorage.getItem('token')}`}
-            })
-            console.log(url)
-        return document.data
-    }, 
-        queryKey: ['document-detail'] 
-    })
+    const { data } = useGetDocumentDetails(id)
 
-    console.log(data)
     return(
         <DrawerFC 
             title="Detalhes"
-            children={<><p>{id}</p></>}
             buttonText="Editar"
             isLoading={false}
             onClick={() => console.log('onClick')}
             open={open}
             setOpen={setOpen}
+            children={data ? <ContentForm data={data} />: <p>Loading...</p>}
         /> 
     )
 }
 
-const ContentForm = () => {
+const ContentForm = ({data}: {data: Document}) => {
     const [companys, setCompanys] = useState('')
+    const date = dayjs(data.expiration)
     return(
         <Form layout="vertical" hideRequiredMark>
         <Row gutter={16}>
@@ -51,15 +42,16 @@ const ContentForm = () => {
                     name='name'
                     label='Empresa'
                     rules={[{required: true, message: 'Coloque seu Nome'}]}
+                    initialValue={data?.companyId}
                 >
-                    <SelectCompany setCompanys={setCompanys} />
+                    <SelectCompany value={data?.companyId} setCompanys={setCompanys} />
                 </Form.Item>
             </Col>
             <Col span={12}>
                 <Form.Item
                     name='requester'
                     label='Solicitante'
-                    initialValue={'user?.name'}
+                    initialValue={data?.requesterId}
                     rules={[{required: true, message: 'Coloque seu Sobrenome'}]}
                 >
                     <Input placeholder="Coloque seu Sobrenome" disabled />
@@ -72,14 +64,15 @@ const ContentForm = () => {
                         name='description'
                         label='Documento'
                         rules={[{required: true, message: 'Coloque seu Sobrenome'}]}
+                        initialValue={data?.document}
                     >
-                        <Input onChange={(e) => setRequest({...request, document: e.target.value})} />
+                        <Input onChange={(e) => console.log(e)} />
                     </Form.Item>
             </Col>
             <Col span={12}>
                 <p style={{height: '22px', marginBottom: '8px'}}>Prazo</p>
                     <ConfigProvider locale={locale}>
-                        <DatePicker onChange={onChange}  style={{ width: '100%' }} /> 
+                        <DatePicker defaultValue={date} contentEditable={false} format="DD-MM-YYYY" style={{ width: '100%' }} /> 
                     </ConfigProvider>
             </Col>
             <Col span={12}>
@@ -87,9 +80,10 @@ const ContentForm = () => {
                     name='lastName'
                     label='Descrição'
                     rules={[{required: true, message: 'Coloque seu Sobrenome'}]}
+                    initialValue={data?.description}
                 >
                     <TextArea
-                        onChange={(e) => setRequest({...request, description: e.target.value})} 
+                        // onChange={(e) => setRequest({...request, description: e.target.value})} 
                         placeholder="Escreva uma descrição"
                         autoSize={{ minRows: 2, maxRows: 6 }}
                     /> 

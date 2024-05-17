@@ -16,6 +16,7 @@ export default function DrawerFC({
     open, setOpen, onClick, isLoading = false, children, buttonText, title 
 }:DrawerComponentProps){
     return(
+        <>
         <Drawer 
             title={title}
             width={720}
@@ -25,7 +26,7 @@ export default function DrawerFC({
             extra={
                 <Space>
                     <Button onClick={() => setOpen(false)}>Cancelar</Button>
-                    <Button onClick={onClick} type='primary'>
+                    <Button onClick={onClick} type='primary' disabled>
                         { isLoading 
                         ? <PulseLoader  color="#fff" size={6} loading={true} /> 
                         : buttonText }
@@ -34,5 +35,6 @@ export default function DrawerFC({
         >
             {children}
         </Drawer>
+        </>
     )
 }
