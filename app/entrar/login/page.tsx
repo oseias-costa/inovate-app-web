@@ -4,12 +4,18 @@ import { useEffect, useState } from "react";
 import Logo from '@/public/auth/logo-clean.png'
 import LoginIlustration from '@/public/auth/login.svg'
 import { useLoginMutation } from "@/app/_lib/_hooks/useLoginMutation";
-import { redirect, useRouter } from "next/navigation";
+import { redirect, useRouter, useSearchParams } from "next/navigation";
 import { Button, Input as InputAnt, Typography, message } from 'antd';
 import PulseLoader from "react-spinners/PulseLoader";
 import { useIsMutating } from "@tanstack/react-query";
 
-export default function Login(){
+type LoginPageProps = {
+  searchParams: {
+    redirectUri: string
+  }
+}
+
+export default function Login({searchParams}: LoginPageProps){
     const [data, setData] = useState({ email: '', password: '' })
     const [error, setError] = useState('')
     const [showPassword, setShowPassword] = useState(false);
@@ -19,7 +25,10 @@ export default function Login(){
 
     const isMutation = useIsMutating({ mutationKey: ['login'], exact: true})
     if(mutate.isSuccess){
-      return redirect('/portal/documentos')
+      // if(searchParams.redirectUri !== ""){
+        return redirect(searchParams.redirectUri)
+      // }
+      // return redirect('/portal/documentos')
     }
     
     const [messageApi, contextHolder] = message?.useMessage();
