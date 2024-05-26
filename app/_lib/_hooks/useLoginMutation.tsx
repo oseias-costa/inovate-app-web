@@ -13,9 +13,9 @@ export const useLoginMutation = (setError: Dispatch<SetStateAction<string>>) => 
     const queryClient = useQueryClient()
     const token = localStorage.getItem('token')
 
-    if(token){
-      return redirect('/portal/documentos')
-  }
+  //   if(token){
+  //     return redirect('/portal/documentos')
+  // }
     
     const postData = async (data: LoginData) => {
         const response = await axios({
