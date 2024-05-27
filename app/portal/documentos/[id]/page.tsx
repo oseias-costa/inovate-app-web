@@ -8,6 +8,7 @@ import {
   Input,
   Row,
   Steps,
+  Tag,
   UploadProps,
   message,
 } from "antd";
@@ -80,9 +81,14 @@ const DocumentPage = () => {
         ]}
         style={{ paddingBottom: 10 }}
       />
+      <div style={{display: 'flex'}}>  
       <h2 style={{ fontWeight: 400, paddingBottom: 25, color: "#404040" }}>
         Detalhes da Solicitação
       </h2>
+      <Tag color={'geekblue'} key={data?.status} style={{maxHeight: 20, marginTop: 6, marginLeft: 15}}>
+              {data?.status}
+            </Tag>
+      </div>
       {/* <Steps
         size="small"
         direction="horizontal"
