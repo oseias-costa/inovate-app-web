@@ -11,16 +11,16 @@ export default function Header(){
 
 const styles = {
     container: {
-        boxShadow: 'rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px',
-        height: '72px',
+        display: 'flex',
+        alignItems: 'center',
+        boxShadow: 'rgba(0, 0, 0, 0.16) 0px 1px 4px',
         paddingLeft: '28px',
         width: '100vw'
     },
     logo: {
-        height: '60px',
+        height: '50px',
         width: 'auto',
-        paddingLeft: '8px',
-        marginLeft: '0 auto',
+        paddingLeft: '58px',
         marginRight: '0 auto',
         marginTop: 'auto'
     },

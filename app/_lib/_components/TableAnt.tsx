@@ -8,6 +8,7 @@ import useGetCompanys from '../_hooks/useGetCompanys';
 import DocumentDetails from '@/app/portal/documentos/utils/DocumentDetails';
 import { Company } from '../types/company.type';
 import dayjs from 'dayjs';
+import { useRouter } from 'next/navigation';
 
 interface DataType {
   key: string;
@@ -68,6 +69,7 @@ const TableAnt: React.FC = () => {
   const [documentId, setDocumentId] = useState('')
   const queryClient = useQueryClient()
   const {data: companys} = useGetCompanys()
+  const router = useRouter()
 
   const columns: TableProps<DataType>['columns'] = [
     {
@@ -126,8 +128,7 @@ const TableAnt: React.FC = () => {
       render: (_, record) => (
         <Space size="middle">
           <Button type='text' style={{color: '#1677ff'}} onClick={() => {
-            setDocumentId(record.key)
-            setOpenDocumentDetais(true)
+            router.push(`/portal/documentos/${record.key}`)
             return queryClient.invalidateQueries({queryKey: ['document-detail']})
           }}>Detalhes</Button>
         </Space>

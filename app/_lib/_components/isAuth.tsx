@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query"
 import axios from "axios"
-import { redirect } from "next/navigation"
+import { redirect, useParams } from "next/navigation"
 import React, { useEffect } from "react"
 
-type UserProps = {
+export type UserProps = {
     createAt: string, 
     email: string,
     id: string,
@@ -17,10 +17,13 @@ type UserProps = {
 
 export default function isAuth(Component: any){
     return function IsAuth(props: any) {
-            const token = () => localStorage?.getItem('token')
+        const url = window.location.href
+        const token = localStorage?.getItem('token')
+        useEffect(() => {
             if(!token){
-                return redirect('/entrar/login')
+                return redirect(`/entrar/login?redirectUri=${url}`)
             }
+            },[token])
 
             const getUser = async () => {
                 const user =  await axios({
@@ -39,7 +42,7 @@ export default function isAuth(Component: any){
 
             if(isError){
                 localStorage.removeItem('token')
-                return redirect('/entrar/login')
+                return redirect(`/entrar/login?redirectUri=${url}`)
             }
         
         return <Component {...props} />

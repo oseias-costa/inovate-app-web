@@ -1,32 +1,37 @@
 'use client'
 import { useEffect } from "react";
-import { redirect, useRouter } from "next/navigation";
-import isAuth from "./_lib/_components/isAuth";
+import { redirect, useParams, useRouter } from "next/navigation";
+import isAuth, { UserProps } from "./_lib/_components/isAuth";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 const Home = () => {
-  const user = () => localStorage.getItem('token')
-  const router = useRouter()
+//   const params = useParams()  
+//   console.log('PARAMS DO APP', params)
+//   const token = localStorage?.getItem('token')
+//   if(!token){
+//       return redirect('/entrar/login')
+//   }
 
-  // if(!user){
-  //   redirect('/entrar/bem-vindo')
-  // }
+//   const getUser = async () => {
+//       const user =  await axios({
+//           method: 'GET',
+//           baseURL: `http://localhost:3009/users/${localStorage.getItem('token')}`,
+//           headers: { Authorization: `Bearer ${localStorage.getItem('token')}`}
+//       })
 
-  // useEffect(() => {
-  //   if(user){
+//       return user.data
+//   }
 
-  //     console.log('SECTION', user)
-  //   }    
-  // },[])
+//   const { data, isError, error } = useQuery<UserProps>({
+//       queryKey: ['user'],
+//       queryFn: getUser
+//   })
 
-  return (
-    <main>
-      {/* <p>{JSON.stringify(user)}</p> */}
-      <p>Dashboard</p>
-      <button onClick={() => {
-          router.push('/entrar/bem-vindo')
-      }}>Logout</button>
-    </main>
-  );
+//   if(isError){
+//       localStorage.removeItem('token')
+//       return redirect(`/entrar/login&redirectUri=${redirectUri}`)
+//   }
 }
 
 export default isAuth(Home)
