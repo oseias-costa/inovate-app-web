@@ -11,14 +11,14 @@ import {
   Input,
   Row,
   Space,
+  message,
 } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import locale from "antd/locale/pt_BR";
-import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
 import SelectCompany from "./SelectCompany";
 import useGetUser from "../_hooks/useGetUser";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import {
   useIsMutating,
   useMutation,
@@ -48,14 +48,11 @@ export default function DrawerComponent({
   });
   const { user } = useGetUser();
   const onChange: DatePickerProps["onChange"] = (date, dateString) => {
-    console.log(date, dateString);
-    const d = new Date();
-    console.log(d);
-    setRequest({ ...request, expiration: String(d) });
+    const d = new Date(date.toDate());
+    setRequest({ ...request, expiration: d.toISOString() });
   };
 
   useEffect(() => {
-    console.log("typeof", user);
     setRequest({
       ...request,
       companyId: companys,
@@ -86,10 +83,17 @@ export default function DrawerComponent({
       onClose();
       return queryClient.invalidateQueries({ queryKey: ["documents"] });
     },
-    onError: (err) => {
-      console.log(err);
-    },
+    onError: (error: AxiosError | any) => {
+      if(error.response){
+        message.error(error.response?.data.message)
+      }
+    }
   });
+  console.log('user', user)
+
+  if(!user){
+    return(<p>Loading</p>)
+  }
 
   return (
     <Drawer
@@ -129,7 +133,7 @@ export default function DrawerComponent({
               initialValue={user?.name}
               rules={[{ required: true, message: "Coloque seu Sobrenome" }]}
             >
-              <Input placeholder="Coloque seu Sobrenome" disabled />
+              <Input placeholder="Coloque seu Sobrenome" disabled value={user?.name}/>
             </Form.Item>
           </Col>
         </Row>

@@ -2,21 +2,23 @@
 import isAuth from "@/app/_lib/_components/isAuth";
 import { Breadcrumb, Button, Tabs, TabsProps } from "antd";
 import Link from "next/link";
-import TableCompanys from "./utils/TableCompanys";
+import TableCompanys from "./utils/TableActiveCompanys";
 import { useState } from "react";
 import { PlusOutlined } from "@ant-design/icons";
 import DrawerCompany from "./utils/DrawerCompany";
+import TableActiveCompanys from "./utils/TableActiveCompanys";
+import TableDesactiveCompanys from "./utils/TableDesactiveCompanys";
 
 const items: TabsProps["items"] = [
   {
     key: "1",
     label: "Ativas",
-    children: <TableCompanys />,
+    children: <TableActiveCompanys />,
   },
   {
     key: "2",
     label: "Inativas",
-    children: "Content of Tab Pane 2",
+    children: <TableDesactiveCompanys />,
   },
 ];
 

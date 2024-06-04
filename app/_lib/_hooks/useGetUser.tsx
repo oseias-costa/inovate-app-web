@@ -17,7 +17,7 @@ export default function useGetUser(){
     const getUser = async () => {
         const user =  await axios({
             method: 'GET',
-            baseURL: `http://localhost:3009/users/${localStorage.getItem('token')}`,
+            baseURL: `http://localhost:3009/users/user/${localStorage.getItem('token')}`,
             headers: { Authorization: `Bearer ${localStorage.getItem('token')}`}
         })
   

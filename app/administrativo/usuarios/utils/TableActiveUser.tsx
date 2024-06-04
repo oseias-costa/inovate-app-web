@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Button, Space, Table, Tag } from 'antd';
 import type { TableProps } from 'antd';
 import axios from 'axios';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import DocumentDetails from '@/app/portal/documentos/utils/DocumentDetails';
-import dayjs from 'dayjs';
 import { useRouter } from 'next/navigation';
-import DrawerCompany from './DrawerCompany';
-import useGetCompanys from '@/app/_lib/_hooks/useGetCompanys';
+import DrawerCompany from './DrawerUser';
+import { Company } from '@/app/_lib/types/company.type';
 
 interface CompanyTableType {
   id: string;
@@ -16,59 +14,31 @@ interface CompanyTableType {
   status: string;
 }
 
-const data: CompanyTableType[] = [
-  {
-    id: '1',
-    name: 'Ampla',
-    email: 'ampla@ampla.com.br',
-    status: 'EXPIRED',
-  },
-  {
-    id: '2',
-    name: 'Ecoadubos',
-    email: 'Licença FEPAN',
-    status: 'FINISH',
-  },
-  {
-    id: '3',
-    name: 'Prefeitura de Tapejara',
-    email: 'Documento exemplo',
-    status: 'EXPIRED',
-  },  
-  {
-    id: '4',
-    name: 'Ampla',
-    email: 'Contrato Social',
-    status: 'PEDING',
-  },
-  {
-    id: '5',
-    name: 'Ecoadubos',
-    email: 'Licença FEPAN',
-    status: 'FINISH',
-  },
-  {
-    id: '6',
-    name: 'Prefeitura de Tapejara',
-    email: 'Documento exemplo',
-    status: 'EXPIRED',
-  },
-];
-// 'EXPIRED' | 'PEDING' | 'FINISH'
-const TableCompanys: React.FC = () => { 
-  const { data } = useGetCompanys()
+const TableActiveUser: React.FC = () => { 
+
+  const getCompanysByStatus = async () => {
+    const data = await axios({
+      method: 'get',
+      baseURL: 'http://localhost:3009/users/ACTIVE',
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}`}
+    })
+    return data.data
+  }
+  
+  const { data } = useQuery<Company[]>({
+    queryKey: ['users-active'],
+    queryFn: getCompanysByStatus
+  })
   const [openDocumentDetais, setOpenDocumentDetais] = useState(false)
   const queryClient = useQueryClient()
   const router = useRouter()
 
   const columns: TableProps<CompanyTableType>['columns'] = [
     {
-      title: 'Empresa',
+      title: 'Usuário',
       dataIndex: 'name',
       key: 'name',
       render:  (id) => {
-        // const company = companys?.filter((item: Company) => item.id === id)[0] 
-        // return <p>{company?.name}</p>
         return <p>{id}</p>
       }
     },
@@ -119,7 +89,7 @@ const TableCompanys: React.FC = () => {
   ];
 
 let options: CompanyTableType[] = []
-
+console.log(data)
 const convertData = data?.map((item: any) => {
 options.push({id: item.id, name: item.name, email: item.email, status: item.status})})
 
@@ -138,4 +108,4 @@ options.push({id: item.id, name: item.name, email: item.email, status: item.stat
       </>
 )};
 
-export default TableCompanys;
+export default TableActiveUser;

@@ -172,7 +172,7 @@ const DocumentPage = () => {
           >
             <Dragger
               name="file"
-              action={`http://localhost:3009/document/upload/${data?.companyId}`}
+              action={`http://localhost:3009/document/upload/${data?.id}`}
               headers={{
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
               }}
