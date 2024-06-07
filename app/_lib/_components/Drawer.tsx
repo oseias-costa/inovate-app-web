@@ -46,6 +46,7 @@ export default function DrawerComponent({
     realmId: "",
     expiration: "",
   });
+  console.log(request)
   const { user } = useGetUser();
   const onChange: DatePickerProps["onChange"] = (date, dateString) => {
     const d = new Date(date.toDate());
@@ -142,7 +143,7 @@ export default function DrawerComponent({
             <Form.Item
               name="description"
               label="Documento"
-              rules={[{ required: true, message: "Coloque seu Sobrenome" }]}
+              rules={[{ required: true, message: "Coloque o nome do documento" }]}
             >
               <Input
                 onChange={(e) =>

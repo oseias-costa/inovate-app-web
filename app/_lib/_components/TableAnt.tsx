@@ -70,6 +70,7 @@ const TableAnt: React.FC = () => {
   const queryClient = useQueryClient()
   const {data: companys} = useGetCompanys()
   const router = useRouter()
+  const [pagination, setPagination] = useState({page: '1', limit: '2'})
 
   const columns: TableProps<DataType>['columns'] = [
     {
@@ -139,19 +140,29 @@ const TableAnt: React.FC = () => {
   const getDocuments = async () => {
     const documents =  await axios({
         method: 'GET',
-        baseURL: 'http://localhost:3009/document',
+        baseURL: `http://localhost:3009/document?page=${pagination.page}&limit=${pagination.limit}`,
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}`}
     })
 
     return documents.data
 }
 
-const { data: docs, isLoading } = useQuery<Document[]>({
-    queryKey: ['documents'],
+type Documents = {
+  "items": Document[]
+  "meta": {
+    "totalItems": number
+    "itemCount": number
+    "itemsPerPage": number
+    "totalPages": number
+    "currentPage": number  }
+}
+
+const { data: docs, isLoading } = useQuery<Documents>({
+    queryKey: [`document-page-${pagination.page}`],
     queryFn: getDocuments
 })
 let options: DataType[] = []
-const convertData = docs?.map((item: any) => {
+const convertData = docs?.items?.map((item: any) => {
   console.log(item)
   options.push({key: item.id, company: item.companyId, document: item.document, age: item.expiration, status: item.status})})
 console.log(options)
@@ -166,6 +177,14 @@ console.log(options)
       <Table 
         columns={columns} 
         dataSource={options} 
+        pagination={{
+          current: docs?.meta.currentPage,
+          pageSize: docs?.meta.itemsPerPage,
+          total: docs?.meta.totalItems
+        }}
+        onChange={(item) => {
+          setPagination({page: String(item['current']), limit: '2'})
+        }}
         style={{width: 'calc(100vw - 326px)'}} 
         />
       </>
