@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
 import { Button, Space, Table, Tag } from 'antd';
 import type { TableProps } from 'antd';
 import axios from 'axios';
@@ -18,53 +18,15 @@ interface DataType {
   status: string;
 }
 
-const data: DataType[] = [
-  {
-    key: '1',
-    company: 'Ampla',
-    document: 'Contrato Social',
-    age: '12/05/24',
-    status: 'EXPIRED',
-  },
-  {
-    key: '2',
-    company: 'Ecoadubos',
-    document: 'Licença FEPAN',
-    age: '14/05/24',
-    status: 'FINISH',
-  },
-  {
-    key: '3',
-    company: 'Prefeitura de Tapejara',
-    document: 'Documento exemplo',
-    age: '20/05/24',
-    status: 'EXPIRED',
-  },  
-  {
-    key: '4',
-    company: 'Ampla',
-    document: 'Contrato Social',
-    age: '12/05/24',
-    status: 'PEDING',
-  },
-  {
-    key: '5',
-    company: 'Ecoadubos',
-    document: 'Licença FEPAN',
-    age: '14/05/24',
-    status: 'FINISH',
-  },
-  {
-    key: '6',
-    company: 'Prefeitura de Tapejara',
-    document: 'Documento exemplo',
-    age: '20/05/24',
-    status: 'EXPIRED',
-  },
-];
-// 'EXPIRED' | 'PEDING' | 'FINISH'
-const TableAnt: React.FC = () => { 
-  const {data} = useGetCompanys()
+type TableDocumentsProps = {
+  filter: {
+    user: string,
+    company: string
+  }
+  setFilter: Dispatch<SetStateAction<{user: string, company: string}>>
+}
+
+const TableAnt = ({filter, setFilter}: TableDocumentsProps) => { 
   const [openDocumentDetais, setOpenDocumentDetais] = useState(false)
   const [documentId, setDocumentId] = useState('')
   const queryClient = useQueryClient()
@@ -138,14 +100,21 @@ const TableAnt: React.FC = () => {
   ];
 
   const getDocuments = async () => {
-    const documents =  await axios({
-        method: 'GET',
-        baseURL: `http://localhost:3009/document?page=${pagination.page}&limit=${pagination.limit}`,
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}`}
-    })
+    const documents = await axios({
+      method: "GET",
+      baseURL: `http://localhost:3009/document?page=${pagination.page}&limit=${pagination.limit}&user=${filter.user}&company&${filter.company}`,
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+    });
 
-    return documents.data
-}
+    return documents.data;
+  };
+
+console.log('filter.company', filter.company)
+console.log(`http://localhost:3009/document?page=${pagination.page}&limit=${pagination.limit}&user=${filter.user}&company&${filter.company}`)
+const { data: docs, isLoading } = useQuery<Documents>({
+  queryKey: [`document-page`, pagination.page ],
+  queryFn: getDocuments,
+}) 
 
 type Documents = {
   "items": Document[]
@@ -157,15 +126,16 @@ type Documents = {
     "currentPage": number  }
 }
 
-const { data: docs, isLoading } = useQuery<Documents>({
-    queryKey: [`document-page-${pagination.page}`],
-    queryFn: getDocuments
-})
 let options: DataType[] = []
 const convertData = docs?.items?.map((item: any) => {
-  console.log(item)
-  options.push({key: item.id, company: item.companyId, document: item.document, age: item.expiration, status: item.status})})
-console.log(options)
+  options.push({
+    key: item.id,
+    company: item.companyId,
+    document: item.document,
+    age: item.expiration,
+    status: item.status,
+  });
+});
 
   return(
     <>

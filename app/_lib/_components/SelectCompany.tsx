@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Select } from "antd";
 import axios from "axios";
 import { Dispatch, SetStateAction } from "react";
@@ -16,6 +16,7 @@ type SelectCompanyProps = {
 
 export default function SelectCompany({setCompanys, value}: SelectCompanyProps){
     const {data} = useGetCompanys()
+    const queryClient = useQueryClient()
     let options: Options[] = []
     if(value){
         options.push({value: '1', label: value})
@@ -30,7 +31,10 @@ export default function SelectCompany({setCompanys, value}: SelectCompanyProps){
                 style={{ width: '100%' }}
                 placeholder="Selecione a Empresa"
                 optionFilterProp="children"
-                onSelect={(value) => setCompanys(value)}
+                onSelect={(value) => {
+                    setCompanys(value)
+                    return queryClient.invalidateQueries({ queryKey: ['document-page', 1]})
+                }}
                 filterOption={(input, option) => (option?.label ?? '').includes(input)}
                 filterSort={(optionA, optionB) =>
                 (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
