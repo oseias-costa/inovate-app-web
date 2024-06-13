@@ -6,6 +6,7 @@ import React from 'react';
 import { AppstoreOutlined, FileOutlined, HomeOutlined, SettingOutlined, UserOutlined, UserSwitchOutlined, UsergroupAddOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Menu as MenuAnt } from 'antd';
+import Sider from "antd/lib/layout/Sider";
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -87,7 +88,47 @@ const items: MenuItem[] = [
   },
 ];
 
-export default function Menu(){
+export default function Menu({isMobile}:{isMobile: boolean}){
+
+const styles = {
+  container: {
+      display: isMobile ? 'none' : 'block',
+      width: '236px',
+      height: '100vh',
+      // boxShadow: 'rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px',
+      // borderRight: '1px solid #d3d3d3',
+      background: '#fff',
+      position: 'absolute'
+      // paddingLeft: '8px',
+      // paddingRight: '8px'
+  } as const,
+  logo: {
+      height: 'auto',
+      width: '80%',
+      paddingBottom: '24px',
+      paddingLeft: '8px',
+      marginLeft: '0 auto',
+      marginRight: '0 auto'
+  },
+  item: {
+      // backgroundColor: '#8c8c8c',
+      paddingTop: '4px',
+      paddingBottom: '4px',
+      paddingLeft: '16px',
+      borderBottom: '1px solid #d3d3d3',
+      borderTop: '1px solid #d3d3d3',
+      ":hover": {
+          backgroundColor: '#fff',
+      },
+      borderRight: '4px solid blue'
+  }, 
+  itemText: {
+      color: '#8c8c8c',
+      fontFamilu: 'Lato',
+      fontWeight: '100',
+  }
+}
+
     const router = useRouter()
     const onClick: MenuProps['onClick'] = (e) => {
         console.log('click ', e);
@@ -95,7 +136,7 @@ export default function Menu(){
       };
     
     return(
-        <div style={styles.container}>
+        <Sider style={styles.container}>
         <MenuAnt
             onClick={onClick}
             style={{ width: 236 }}
@@ -111,7 +152,7 @@ export default function Menu(){
              <Item path='/portal/licencas-operacionais' text="Licenças Operacionais" />
              <Item path='/portal/configuracoes' text="Configurações" /> */}
             
-        </div>
+        </Sider>
     )
 }
 
@@ -130,42 +171,4 @@ const Item = ({path, text}: {path: string, text: string}) => {
               style={style}
         >{text}</Button>
     )
-}
-
-const styles = {
-    container: {
-        width: '236px',
-        height: '100vh',
-        // boxShadow: 'rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px',
-        // borderRight: '1px solid #d3d3d3',
-        background: '#fff',
-        position: 'absolute'
-        // paddingLeft: '8px',
-        // paddingRight: '8px'
-    } as const,
-    logo: {
-        height: 'auto',
-        width: '80%',
-        paddingBottom: '24px',
-        paddingLeft: '8px',
-        marginLeft: '0 auto',
-        marginRight: '0 auto'
-    },
-    item: {
-        // backgroundColor: '#8c8c8c',
-        paddingTop: '4px',
-        paddingBottom: '4px',
-        paddingLeft: '16px',
-        borderBottom: '1px solid #d3d3d3',
-        borderTop: '1px solid #d3d3d3',
-        ":hover": {
-            backgroundColor: '#fff',
-        },
-        borderRight: '4px solid blue'
-    }, 
-    itemText: {
-        color: '#8c8c8c',
-        fontFamilu: 'Lato',
-        fontWeight: '100',
-    }
 }

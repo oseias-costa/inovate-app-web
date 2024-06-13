@@ -1,14 +1,14 @@
 "use client";
 import isAuth from "@/app/_lib/_components/isAuth";
-import useGetUser from "@/app/_lib/_hooks/useGetUser";
-import { Breadcrumb, Col, Form, Input, Row, Tabs, TabsProps } from "antd";
+import { Breadcrumb, Tabs, TabsProps } from "antd";
 import Link from "next/link";
+import Data from "./tabs/Data";
 
 const items: TabsProps["items"] = [
   {
     key: "1",
     label: "Dados",
-    children: "Content of Tab Pane 2",
+    children: <Data />,
   },
   {
     key: "2",
@@ -31,11 +31,6 @@ const Account = () => {
   const onChange = (key: string) => {
     console.log(key);
   };
-  const { user } = useGetUser()
-  console.log(user)
-  if(!user){
-    return <p>...Loading</p>
-  }
 
   return (
     <div>
@@ -50,26 +45,6 @@ const Account = () => {
         Conta
       </h2>
       <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
-      <Row gutter={16}>
-        <Col xs={11}>
-          <Form.Item
-            name="name"
-            label="Nome"
-            // rules={[{ required: true, message: "Coloque seu Nome" }]}
-          >
-            <Input defaultValue={user?.name}  />
-          </Form.Item>
-        </Col>
-        <Col xs={11}>
-          <Form.Item
-            name="name"
-            label="E-mail"
-            // rules={[{ required: true, message: "Coloque seu Nome" }]}
-          >
-            <Input defaultValue={user?.email}  />
-          </Form.Item>
-        </Col>
-      </Row>
     </div>
   );
 };
