@@ -19,7 +19,8 @@ export default function Layout({
         <div
           style={{
             width: mobile ? "100%" : "auto",
-            paddingLeft: mobile ? "60px" : "300px",
+            paddingLeft: mobile ? "40px" : "300px",
+            paddingRight: mobile ? "40px" : '0px',
             paddingTop: "30px",
           }}
         >
