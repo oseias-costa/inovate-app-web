@@ -7,9 +7,7 @@ import {
   Form,
   Input,
   Row,
-  Steps,
   Tag,
-  UploadProps,
   message,
 } from "antd";
 import locale from "antd/locale/pt_BR";

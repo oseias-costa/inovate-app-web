@@ -61,7 +61,7 @@ export default function DocumentDetails({
   const isMutation = useIsMutating({ mutationKey: ["documents"], exact: true });
   
   console.log(data)
-  const updateDocument = async(file) => {
+  const updateDocument = async(file: any) => {
     await axios({
         method: 'post',
         baseURL: `http://localhost:3009/document/upload/${data?.companyId}`,
