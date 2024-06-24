@@ -1,32 +1,48 @@
 "use client";
+import styled from "styled-components";
 import Header from "../_lib/_components/Header";
 import Menu from "../_lib/_components/Menu";
+import useGetUser from "../_lib/_hooks/useGetUser";
 import { useObserveElementWidth } from "../_lib/_hooks/useObserveElementWidth";
+import { useState } from "react";
+import Spinner from "../_lib/_components/Spinner";
 
 export default function Layout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { width, ref } = useObserveElementWidth();
-  const mobile = width < 840;
+  const { user } = useGetUser();
+  const [openMenu, setOpenMenu] = useState(false);
+
+  const closeMenu = () => {
+    if (openMenu) {
+      setOpenMenu(false);
+    }
+  };
+
+  if (!user) {
+    return <Spinner />;
+  }
 
   return (
-    <div style={{ paddingLeft: "0px" }} ref={ref}>
-      <Header />
+    <div style={{ paddingLeft: "0px" }}>
+      <Header open={openMenu} setOpen={setOpenMenu} />
       <div style={{ paddingTop: "2px", display: "flex" }}>
-        <Menu isMobile={mobile} />
-        <div
-          style={{
-            width: mobile ? "100%" : "auto",
-            paddingLeft: mobile ? "40px" : "300px",
-            paddingRight: mobile ? "40px" : '0px',
-            paddingTop: "30px",
-          }}
-        >
-          {children}
-        </div>
+        <Menu open={openMenu} setOpen={setOpenMenu} />
+        <BodyContainer onClick={closeMenu}>{children}</BodyContainer>
       </div>
     </div>
   );
 }
+
+const BodyContainer = styled.section`
+  padding-left: 236px;
+  padding-top: 30px;
+
+  @media (max-width: 840px) {
+    width: 100%;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+`;

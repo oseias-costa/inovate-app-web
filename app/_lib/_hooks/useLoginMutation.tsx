@@ -1,8 +1,7 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import axios from "axios"
-import { Dispatch, SetStateAction, useEffect, useState } from "react"
-import Cookies from 'js-cookie'
-import { redirect } from "next/navigation"
+import { Dispatch, SetStateAction, useState } from "react"
+
 type LoginData = {
     email: string,
     password: string
@@ -10,12 +9,6 @@ type LoginData = {
 
 export const useLoginMutation = (setError: Dispatch<SetStateAction<string>>) => {
     const [fetchToken, setFetchToken] = useState(false)
-    const queryClient = useQueryClient()
-    const token = localStorage.getItem('token')
-
-  //   if(token){
-  //     return redirect('/portal/documentos')
-  // }
     
     const postData = async (data: LoginData) => {
         const response = await axios({
@@ -33,7 +26,7 @@ export const useLoginMutation = (setError: Dispatch<SetStateAction<string>>) => 
         onSuccess: (data) => {
           localStorage.setItem('token', data['token'])
           setFetchToken(true)
-        },
+        },  
         onError: () => {
           // removeCookie('tokenInovate')
           setError('E-mail ou senha incorretos')

@@ -4,7 +4,7 @@ import styled from "styled-components";
 
 export default function Data() {
   const { user } = useGetUser();
-
+  console.log(user)
   if (!user) {
     return <p>...Loading</p>;
   }

@@ -47,11 +47,7 @@ const DocumentPage = () => {
       <div
         style={{
           width: "calc(100vw - 350px)",
-          //   height: 'calc(100vh - 102px)',
           marginTop: 100,
-          //   position: "absolute",
-          //   left: 0,
-          //   top: 0,
           display: "flex",
           justifyContent: "center",
           alignContent: "center",

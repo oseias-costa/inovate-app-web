@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Button, Space, Table, Tag } from "antd";
 import type { TableProps } from "antd";
 import axios from "axios";
@@ -9,6 +9,7 @@ import DocumentDetails from "@/app/portal/documentos/utils/DocumentDetails";
 import { Company } from "../types/company.type";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
+import useGetUser from "../_hooks/useGetUser";
 
 interface DataType {
   key: string;
@@ -32,7 +33,14 @@ const TableAnt = ({ filter, setFilter }: TableDocumentsProps) => {
   const queryClient = useQueryClient();
   const { data: companys } = useGetCompanys();
   const router = useRouter();
+  const { user } = useGetUser()
   const [pagination, setPagination] = useState({ page: "1", limit: "2" });
+
+  useEffect(() => {
+    if(user?.type === 'COMPANY'){
+      setFilter({...filter, company: user.id})
+    }
+  },[user])
 
   const columns: TableProps<DataType>["columns"] = [
     {

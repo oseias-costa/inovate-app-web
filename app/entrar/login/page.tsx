@@ -24,13 +24,15 @@ export default function Login({searchParams}: LoginPageProps){
     const router = useRouter()
 
     const isMutation = useIsMutating({ mutationKey: ['login'], exact: true})
-    if(mutate.isSuccess){
-      // if(searchParams.redirectUri !== ""){
-        return redirect(searchParams.redirectUri)
-      // }
-      // return redirect('/portal/documentos')
-    }
-    
+    useEffect(() => {
+      if(mutate.isSuccess){
+        if(!searchParams.redirectUri){
+        return redirect('/portal/dashboard')
+      }
+      return redirect(searchParams.redirectUri)  
+      }
+    },[isMutation]) 
+
     const [messageApi, contextHolder] = message?.useMessage();
       useEffect(() => {
         if(mutate.error?.message === 'Network Error'){

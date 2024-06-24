@@ -13,15 +13,15 @@ import SelectCompany from "@/app/_lib/_components/SelectCompany";
 const Documents = () => {
   const { user } = useGetUser();
   const [openDrawer, setOpenDrawer] = useState(false);
-  const [company, setCompany] = useState('')
-  const [filter, setFilter] = useState({user: "", company: ''})
+  const [company, setCompany] = useState("");
+  const [filter, setFilter] = useState({ user: "", company: "" });
   const handleChange = (value: string) => {
     console.log(`selected ${value}`);
   };
 
   useEffect(() => {
-    setFilter({user: "", company: company})
-  },[company])
+    setFilter({ user: "", company: company });
+  }, [company]);
 
   console.log("user na page", user);
 
@@ -51,7 +51,7 @@ const Documents = () => {
       children: "Content of Tab Pane 3",
     },
   ];
-  //color: '#00000E0'
+
   return (
     <div>
       <Breadcrumb
@@ -61,36 +61,37 @@ const Documents = () => {
         ]}
         style={{ paddingBottom: 10 }}
       />
-      <h2 style={{ fontWeight: 400, paddingBottom: 25, color: "#404040", }}>
+      <h2 style={{ fontWeight: 400, paddingBottom: 25, color: "#404040" }}>
         Solicitações de documentos
       </h2>
-      <div style={{ paddingBottom: 20, display: "flex" }}>
-        <SelectCompany setCompanys={setCompany} />
-        <Select
-          defaultValue="lucy"
-          style={{ width: 120, marginLeft: 10 }}
-          onChange={handleChange}
-          options={[
-            { value: "jack", label: "Leonardo" },
-            { value: "lucy", label: "Cássio" },
-            { value: "Yiminghe", label: "Rafael" },
-            { value: "disabled", label: "Katherine", disabled: true },
-          ]}
-        />
-        <Button type="primary" disabled style={{ marginLeft: 10 }}>
-          Filtrar
-        </Button>
-        <Button type="default" style={{ marginLeft: 5 }}>
-          Limpar
-        </Button>
-        <Button
-          type="primary"
-          style={{ marginLeft: "auto", marginRight: '20px' }}
-          onClick={() => setOpenDrawer(true)}
-        >
-          <PlusOutlined /> Nova Solicitação
-        </Button>
-      </div>
+      {user?.type === "USER" || user?.type === "ADMIN" && (
+        <div style={{ paddingBottom: 10, display: "flex", flexWrap: "wrap" }}>
+          <SelectCompany setCompanys={setCompany} />
+          <Select
+            defaultValue="lucy"
+            onChange={handleChange}
+            options={[
+              { value: "jack", label: "Leonardo" },
+              { value: "lucy", label: "Cássio" },
+              { value: "Yiminghe", label: "Rafael" },
+              { value: "disabled", label: "Katherine", disabled: true },
+            ]}
+          />
+          <Button type="primary" disabled style={{ marginLeft: 10 }}>
+            Filtrar
+          </Button>
+          <Button type="default" style={{ marginLeft: 5 }}>
+            Limpar
+          </Button>
+          <Button
+            type="primary"
+            style={{ marginLeft: "auto", marginRight: "20px" }}
+            onClick={() => setOpenDrawer(true)}
+          >
+            <PlusOutlined /> Nova Solicitação
+          </Button>
+        </div>
+      )}
       <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
       <Drawer open={openDrawer} setOpen={setOpenDrawer} />
     </div>
