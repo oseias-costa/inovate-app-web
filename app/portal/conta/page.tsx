@@ -2,7 +2,8 @@
 import isAuth from "@/app/_lib/_components/isAuth";
 import { Breadcrumb, Tabs, TabsProps } from "antd";
 import Link from "next/link";
-import Data from "./tabs/Data";
+import Data from "./components/Data";
+import Password from "./components/Password";
 
 const items: TabsProps["items"] = [
   {
@@ -13,18 +14,8 @@ const items: TabsProps["items"] = [
   {
     key: "2",
     label: "Senha",
-    children: "Content of Tab Pane 2",
-  },
-  {
-    key: "3",
-    label: "Notificações",
-    children: "Content of Tab Pane 3",
-  },
-  {
-    key: "4",
-    label: "Verificação",
-    children: "Content of Tab Pane 3",
-  },
+    children: <Password />,
+  }
 ];
 
 const Account = () => {

@@ -36,7 +36,7 @@ export default function useGetUser() {
     retry: false,
   });
 
-  console.log(data)
+  console.log(error)
   useEffect(() => {
 
     if (error) {

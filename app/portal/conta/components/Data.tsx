@@ -1,16 +1,24 @@
 import useGetUser from "@/app/_lib/_hooks/useGetUser";
-import { Input, Typography } from "antd";
+import { UserOutlined } from "@ant-design/icons";
+import { Avatar, Button, Input, Typography } from "antd";
 import styled from "styled-components";
+import DrawerUpdateUserData from "./DrawerUpdateUserData";
+import { useEffect, useState } from "react";
 
 export default function Data() {
   const { user } = useGetUser();
-  console.log(user)
+  const [open, setOpen] = useState(false)
+  console.log(user, 'dentro de user')
   if (!user) {
     return <p>...Loading</p>;
   }
 
   return (
     <Container>
+      <DrawerUpdateUserData open={open} setOpen={setOpen} />
+      <InputBlock>
+        <Avatar  icon={<UserOutlined />} style={{width: 46, height: 46}}/>
+      </InputBlock>
       <InputBlock>
         <Typography style={{ fontWeight: 400, color: "#8c8c8c" }}>
           Nome:
@@ -23,6 +31,7 @@ export default function Data() {
         </Typography>
         <Input defaultValue={user?.email} />
       </InputBlock>
+      <Button type="default" onClick={() => setOpen(true)}>Editar informações</Button>
     </Container>
   );
 }

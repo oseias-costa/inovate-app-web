@@ -1,10 +1,9 @@
 "use client";
 import { useRouter } from "next/navigation";
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import {
   FileOutlined,
   HomeOutlined,
-  SettingOutlined,
   UserOutlined,
   UsergroupAddOutlined,
 } from "@ant-design/icons";
