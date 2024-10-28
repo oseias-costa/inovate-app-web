@@ -1,20 +1,18 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Button, Space, Table, Tag } from "antd";
 import type { TableProps } from "antd";
-import axios from "axios";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Document } from "../types/document.type";
-import useGetCompanys from "../_hooks/useGetCompanys";
 import DocumentDetails from "@/app/portal/documentos/utils/DocumentDetails";
-import { Company } from "../types/company.type";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import useGetUser from "../_hooks/useGetUser";
+import { httpClient } from "../_utils/httpClient";
 
 interface DataType {
   key: string;
   company: string;
-  document: string;
+  documentName: string;
   age: string;
   status: string;
 }
@@ -25,38 +23,33 @@ type TableDocumentsProps = {
     company: string;
   };
   setFilter: Dispatch<SetStateAction<{ user: string; company: string }>>;
+  status: '' | 'PENDING' | 'DUE' | 'FINISH'
 };
 
-const TableAnt = ({ filter, setFilter }: TableDocumentsProps) => {
+const RequestsTable = ({ filter, setFilter, status }: TableDocumentsProps) => {
   const [openDocumentDetais, setOpenDocumentDetais] = useState(false);
   const [documentId, setDocumentId] = useState("");
   const queryClient = useQueryClient();
-  const { data: companys } = useGetCompanys();
   const router = useRouter();
-  const { user } = useGetUser()
-  const [pagination, setPagination] = useState({ page: "1", limit: "2" });
+  const { user } = useGetUser();
+  const [pagination, setPagination] = useState({ page: "1", limit: "6" });
 
   useEffect(() => {
-    if(user?.type === 'COMPANY'){
-      setFilter({...filter, company: user.id})
+    if (user?.type === "COMPANY") {
+      setFilter({ ...filter, company: user.id });
     }
-  },[user])
+  }, [user]);
 
   const columns: TableProps<DataType>["columns"] = [
+    {
+      title: "Documento",
+      dataIndex: "documentName",
+      key: "documentName",
+    },
     {
       title: "Empresa",
       dataIndex: "company",
       key: "company",
-      render: (id) => {
-        const company = companys?.filter((item: Company) => item.id === id)[0];
-        return <p>{company?.name}</p>;
-      },
-    },
-    {
-      title: "Documento",
-      dataIndex: "document",
-      key: "document",
-      render: (v) => <p>{v}</p>,
     },
     {
       title: "Prazo",
@@ -72,7 +65,6 @@ const TableAnt = ({ filter, setFilter }: TableDocumentsProps) => {
       key: "status",
       dataIndex: "status",
       render: (status) => {
-        console.log("COLORRRRRRRR", status);
         let color;
         switch (status) {
           case "EXPIRED":
@@ -85,7 +77,7 @@ const TableAnt = ({ filter, setFilter }: TableDocumentsProps) => {
             color = "green";
             break;
         }
-        console.log("COLORRRRRRRR", color);
+
         return (
           <Tag color={color} key={status}>
             {status}
@@ -102,7 +94,7 @@ const TableAnt = ({ filter, setFilter }: TableDocumentsProps) => {
             type="text"
             style={{ color: "#1677ff" }}
             onClick={() => {
-              router.push(`/portal/documentos/${record.key}`);
+              router.push(`/portal/request/${record.key}`);
               return queryClient.invalidateQueries({
                 queryKey: ["document-detail"],
               });
@@ -115,23 +107,19 @@ const TableAnt = ({ filter, setFilter }: TableDocumentsProps) => {
     },
   ];
 
-  const getDocuments = async () => {
-    const documents = await axios({
-      method: "GET",
-      baseURL: `http://localhost:3009/document?page=${pagination.page}&limit=${pagination.limit}&user=${filter.user}&company&${filter.company}`,
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    });
-
-    return documents.data;
-  };
-
-  console.log("filter.company", filter.company);
-  console.log(
-    `http://localhost:3009/document?page=${pagination.page}&limit=${pagination.limit}&user=${filter.user}&company&${filter.company}`
-  );
   const { data: docs, isLoading } = useQuery<Documents>({
-    queryKey: [`document-page`, pagination.page],
-    queryFn: getDocuments,
+    queryKey: [`document-page`, pagination.page, status],
+    queryFn: async () => httpClient({
+      path: '/requests',
+      method: 'GET',
+      queryString: {
+        page: pagination.page,
+        limit: pagination.limit,
+        filter: filter.company,
+        companyUuid: 'fd57b31d-8db4-11ef-aa1b-01092cc04206',
+        status
+      }
+    })
   });
 
   type Documents = {
@@ -148,9 +136,9 @@ const TableAnt = ({ filter, setFilter }: TableDocumentsProps) => {
   let options: DataType[] = [];
   const convertData = docs?.items?.map((item: any) => {
     options.push({
-      key: item.id,
-      company: item.companyId,
-      document: item.document,
+      key: item.uuid,
+      company: item.company,
+      documentName: item.documentName,
       age: item.expiration,
       status: item.status,
     });
@@ -172,7 +160,7 @@ const TableAnt = ({ filter, setFilter }: TableDocumentsProps) => {
           total: docs?.meta.totalItems,
         }}
         onChange={(item) => {
-          setPagination({ page: String(item["current"]), limit: "2" });
+          setPagination({ ...pagination, page: String(item["current"]) });
         }}
         style={{ width: "calc(100vw - 326px)" }}
       />
@@ -180,4 +168,4 @@ const TableAnt = ({ filter, setFilter }: TableDocumentsProps) => {
   );
 };
 
-export default TableAnt;
+export default RequestsTable;

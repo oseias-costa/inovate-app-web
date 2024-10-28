@@ -22,8 +22,13 @@ const items: MenuItem[] = [
     children: [
       { key: "/portal/dashboard", label: "Início", icon: <HomeOutlined /> },
       {
-        key: "/portal/documentos",
-        label: "Documentos",
+        key: "/portal/request",
+        label: "Solicitações",
+        icon: <FileOutlined />,
+      },
+      {
+        key: "/portal/notice",
+        label: "Avisos",
         icon: <FileOutlined />,
       },
       { key: "/portal/conta", label: "Conta", icon: <UserOutlined /> },
@@ -69,7 +74,7 @@ export default function Menu({
   );
 }
 
-const MenuContainer = styled(Sider)<{ openMenu: boolean }>`
+const MenuContainer = styled(Sider) <{ openMenu: boolean }>`
   width: 236px;
   height: 100vh;
   background: #fff;
