@@ -9,6 +9,8 @@ import Link from "next/link";
 import { PlusOutlined } from "@ant-design/icons";
 import SelectCompany from "@/app/_lib/_components/SelectCompany";
 import RequestsTable from "@/app/_lib/_components/RequestsTable";
+import NoticeTable from "@/app/_lib/_components/NoticeTable";
+import ReportTable from "@/app/_lib/_components/ReportTable";
 
 const Documents = () => {
   const { user } = useGetUser();
@@ -31,22 +33,22 @@ const Documents = () => {
     {
       key: "1",
       label: "Todas",
-      children: <RequestsTable filter={filter} setFilter={setFilter} status="" />,
+      children: <ReportTable filter={filter} setFilter={setFilter} status="" />,
     },
     {
       key: "2",
       label: "Pendentes",
-      children: <RequestsTable filter={filter} setFilter={setFilter} status="PENDING" />,
+      children: <ReportTable filter={filter} setFilter={setFilter} status="PENDING" />,
     },
     {
       key: "3",
       label: "Vencidas",
-      children: <RequestsTable filter={filter} setFilter={setFilter} status="DUE" />,
+      children: <ReportTable filter={filter} setFilter={setFilter} status="DUE" />,
     },
     {
       key: "4",
       label: "Concluídas",
-      children: <RequestsTable filter={filter} setFilter={setFilter} status="FINISH" />,
+      children: <ReportTable filter={filter} setFilter={setFilter} status="FINISH" />,
     },
   ]
 
@@ -55,39 +57,41 @@ const Documents = () => {
       <Breadcrumb
         items={[
           { title: <Link href="/portal/dashboard">Início</Link> },
-          { title: <Link href="/portal/request">Solicitações</Link> },
+          { title: <Link href="/portal/report">Relatórios</Link> },
         ]}
         style={{ paddingBottom: 10 }}
       />
       <h2 style={{ fontWeight: 400, paddingBottom: 25, color: "#404040" }}>
-        Solicitações de documentos
+        Relatórios
       </h2>
-      <div style={{ paddingBottom: 10, display: "flex", flexWrap: "wrap" }}>
-        <SelectCompany setCompanys={setCompany} />
-        <Select
-          defaultValue="lucy"
-          onChange={handleChange}
-          options={[
-            { value: "jack", label: "Leonardo" },
-            { value: "lucy", label: "Cássio" },
-            { value: "Yiminghe", label: "Rafael" },
-            { value: "disabled", label: "Katherine", disabled: true },
-          ]}
-        />
-        <Button type="primary" disabled style={{ marginLeft: 10 }}>
-          Filtrar
-        </Button>
-        <Button type="default" style={{ marginLeft: 5 }}>
-          Limpar
-        </Button>
-        <Button
-          type="primary"
-          style={{ marginLeft: "auto", marginRight: "20px" }}
-          onClick={() => setOpenDrawer(true)}
-        >
-          <PlusOutlined /> Nova Solicitação
-        </Button>
-      </div>
+      {user?.type === "USER" || user?.type === "ADMIN" && (
+        <div style={{ paddingBottom: 10, display: "flex", flexWrap: "wrap" }}>
+          <SelectCompany setCompanys={setCompany} />
+          <Select
+            defaultValue="lucy"
+            onChange={handleChange}
+            options={[
+              { value: "jack", label: "Leonardo" },
+              { value: "lucy", label: "Cássio" },
+              { value: "Yiminghe", label: "Rafael" },
+              { value: "disabled", label: "Katherine", disabled: true },
+            ]}
+          />
+          <Button type="primary" disabled style={{ marginLeft: 10 }}>
+            Filtrar
+          </Button>
+          <Button type="default" style={{ marginLeft: 5 }}>
+            Limpar
+          </Button>
+          <Button
+            type="primary"
+            style={{ marginLeft: "auto", marginRight: "20px" }}
+            onClick={() => setOpenDrawer(true)}
+          >
+            <PlusOutlined /> Nova Solicitação
+          </Button>
+        </div>
+      )}
       <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
       <Drawer open={openDrawer} setOpen={setOpenDrawer} />
     </div>

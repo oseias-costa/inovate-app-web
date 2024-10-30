@@ -1,15 +1,9 @@
 
 export type Document = {
-    companyId: string,
-    createAt: string,
-    description: string,
-    document: string,
-    expiration: string,
-    id: string,
-    reamlId: string,
-    requesterId: string,
-    status: string,
-    tag: string,
-    updateAt: string,
-    url: string
+  createdAt: string,
+  name: string,
+  uuid: string,
+  tag: string,
+  path: string,
+  type: string
 }

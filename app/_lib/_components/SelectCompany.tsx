@@ -11,11 +11,13 @@ type Options = {
 type SelectCompanyProps = {
   setCompanys: Dispatch<SetStateAction<string>>;
   value?: string;
+  mode?: 'multiple' | 'tags'
 };
 
 export default function SelectCompany({
   setCompanys,
   value,
+  mode
 }: SelectCompanyProps) {
   const { data } = useGetCompanys();
   const queryClient = useQueryClient();
@@ -30,10 +32,11 @@ export default function SelectCompany({
 
   return (
     <Select
+      mode={mode}
       showSearch
       placeholder="Selecione a Empresa"
       optionFilterProp="children"
-      style={{ marginRight: 10, marginBottom: 10 }}
+      style={{ marginRight: 10, marginBottom: 10, width: '100%' }}
       onSelect={(value) => {
         setCompanys(value);
         return queryClient.invalidateQueries({

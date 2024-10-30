@@ -31,6 +31,11 @@ const items: MenuItem[] = [
         label: "Avisos",
         icon: <FileOutlined />,
       },
+      {
+        key: "/portal/report",
+        label: "Relatórios",
+        icon: <FileOutlined />,
+      },
       { key: "/portal/conta", label: "Conta", icon: <UserOutlined /> },
     ],
   },

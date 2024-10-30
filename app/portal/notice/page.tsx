@@ -10,6 +10,7 @@ import { PlusOutlined } from "@ant-design/icons";
 import SelectCompany from "@/app/_lib/_components/SelectCompany";
 import RequestsTable from "@/app/_lib/_components/RequestsTable";
 import NoticeTable from "@/app/_lib/_components/NoticeTable";
+import AddNoticeDrawer from "@/app/_lib/_components/AddNoticeDrawer";
 
 const Documents = () => {
   const { user } = useGetUser();
@@ -63,36 +64,34 @@ const Documents = () => {
       <h2 style={{ fontWeight: 400, paddingBottom: 25, color: "#404040" }}>
         Avisos
       </h2>
-      {user?.type === "USER" || user?.type === "ADMIN" && (
-        <div style={{ paddingBottom: 10, display: "flex", flexWrap: "wrap" }}>
-          <SelectCompany setCompanys={setCompany} />
-          <Select
-            defaultValue="lucy"
-            onChange={handleChange}
-            options={[
-              { value: "jack", label: "Leonardo" },
-              { value: "lucy", label: "Cássio" },
-              { value: "Yiminghe", label: "Rafael" },
-              { value: "disabled", label: "Katherine", disabled: true },
-            ]}
-          />
-          <Button type="primary" disabled style={{ marginLeft: 10 }}>
-            Filtrar
-          </Button>
-          <Button type="default" style={{ marginLeft: 5 }}>
-            Limpar
-          </Button>
-          <Button
-            type="primary"
-            style={{ marginLeft: "auto", marginRight: "20px" }}
-            onClick={() => setOpenDrawer(true)}
-          >
-            <PlusOutlined /> Nova Solicitação
-          </Button>
-        </div>
-      )}
+      <div style={{ paddingBottom: 10, display: "flex", flexWrap: "wrap" }}>
+        <SelectCompany setCompanys={setCompany} />
+        <Select
+          defaultValue="lucy"
+          onChange={handleChange}
+          options={[
+            { value: "jack", label: "Leonardo" },
+            { value: "lucy", label: "Cássio" },
+            { value: "Yiminghe", label: "Rafael" },
+            { value: "disabled", label: "Katherine", disabled: true },
+          ]}
+        />
+        <Button type="primary" disabled style={{ marginLeft: 10 }}>
+          Filtrar
+        </Button>
+        <Button type="default" style={{ marginLeft: 5 }}>
+          Limpar
+        </Button>
+        <Button
+          type="primary"
+          style={{ marginLeft: "auto", marginRight: "20px" }}
+          onClick={() => setOpenDrawer(true)}
+        >
+          <PlusOutlined /> Nova Solicitação
+        </Button>
+      </div>
       <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
-      <Drawer open={openDrawer} setOpen={setOpenDrawer} />
+      <AddNoticeDrawer open={openDrawer} setOpen={setOpenDrawer} />
     </div>
   );
 };
