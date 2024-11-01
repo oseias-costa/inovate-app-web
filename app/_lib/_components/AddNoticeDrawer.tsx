@@ -1,25 +1,17 @@
 "use client";
-import React, { SetStateAction, useEffect, useState } from "react";
+import React, { SetStateAction, useState } from "react";
 import {
   Button,
-  Col,
-  ConfigProvider,
-  DatePicker,
-  DatePickerProps,
   Drawer,
   Form,
   Input,
-  Row,
   Select,
   Space,
   message,
 } from "antd";
-import TextArea from "antd/es/input/TextArea";
-import locale from "antd/locale/pt_BR";
 import "dayjs/locale/pt-br";
 import SelectCompany from "./SelectCompany";
-import useGetUser from "../_hooks/useGetUser";
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import {
   useIsMutating,
   useMutation,
@@ -27,6 +19,9 @@ import {
 } from "@tanstack/react-query";
 import PulseLoader from "react-spinners/PulseLoader";
 import Tiptap from "./Tiptap";
+import { httpClient } from "../_utils/httpClient";
+import Tynymce from "./Tynymce";
+import SelectUsers from "./SelectUsers";
 
 type DrawerComponentProps = {
   open: boolean;
@@ -37,79 +32,49 @@ export default function AddNoticeDrawer({
   open,
   setOpen,
 }: DrawerComponentProps) {
-  const [companys, setCompanys] = useState();
+  const [companys, setCompanys] = useState<string | string[]>([]);
+  const [title, setTitle] = useState('')
+  const [text, setText] = useState('')
   const [type, setType] = useState('')
   const queryClient = useQueryClient();
-  console.log("companys", companys);
-  const [request, setRequest] = useState({
-    requesterId: "",
-    companyId: companys,
-    document: "",
-    description: "",
-    realmId: "",
-    expiration: "",
-  });
-  const { user } = useGetUser();
-  const onChange: DatePickerProps["onChange"] = (date, dateString) => {
-    const d = new Date(date.toDate());
-    setRequest({ ...request, expiration: d.toISOString() });
-  };
 
-  useEffect(() => {
-    setRequest({
-      ...request,
-      companyId: companys,
-      realmId: user ? user.reamlID : "",
-      requesterId: user ? user.id : "",
-    });
-  }, [user, companys]);
+  const users = typeof companys !== 'string' && companys.map((user) => ({ name: '', uuid: user }))
 
-  const onClose = () => {
-    setOpen(false);
-  };
-
-  const postCreateDoc = async () => {
-    const response = await axios({
-      baseURL: "http://localhost:3009/document/create-request",
-      method: "POST",
-      data: { ...request },
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    });
-    return response.data;
-  };
-
-  const isMutation = useIsMutating({ mutationKey: ["documents"], exact: true });
-
-  const mutation = useMutation({
-    mutationFn: postCreateDoc,
+  const createNotice = useMutation({
+    mutationKey: ['create-notice'],
+    mutationFn: async () => await httpClient({
+      path: '/notice',
+      method: 'POST',
+      data: { title, text, users, type }
+    }),
     onSuccess: () => {
-      onClose();
-      return queryClient.invalidateQueries({ queryKey: ["documents"] });
+      setOpen(false)
+      setTitle('')
+      setText('')
+      setCompanys([])
+      setType('')
+      return queryClient.invalidateQueries({ queryKey: ["notice-page"] });
     },
     onError: (error: AxiosError | any) => {
       if (error.response) {
         message.error(error.response?.data.message)
       }
     }
-  });
+  })
 
-  if (!user) {
-    return (<p>Loading</p>)
-  }
-
-  console.log(type)
+  const isMutation = useIsMutating({ mutationKey: ["create-notice"], exact: true });
 
   return (
     <Drawer
       title="Criar aviso"
       width={720}
-      onClose={onClose}
+      onClose={() => setOpen(false)}
       open={open}
       styles={{ body: { paddingBottom: 80 } }}
       extra={
         <Space>
-          <Button onClick={onClose}>Cancelar</Button>
-          <Button onClick={() => mutation.mutate()} type="primary">
+          <Button onClick={() => setOpen(false)}>Cancelar</Button>
+          <Button onClick={() => createNotice.mutate()} type="primary">
             {isMutation ? (
               <PulseLoader color="#fff" size={6} loading={true} />
             ) : (
@@ -143,7 +108,24 @@ export default function AddNoticeDrawer({
             label="Empresa"
             rules={[{ required: true, message: "Selecione uma empresa" }]}
           >
-            <SelectCompany setCompanys={setCompanys} mode="multiple" />
+            <SelectCompany
+              setCompanys={setCompanys}
+              companys={companys}
+              mode="multiple"
+            />
+          </Form.Item>
+        ) : null}
+        {type === "SELECTED_USERS" ? (
+          <Form.Item
+            name="users"
+            label="Usuários"
+            rules={[{ required: true, message: "Selecione os usuários" }]}
+          >
+            <SelectUsers
+              setUsers={setCompanys}
+              users={companys}
+              mode="multiple"
+            />
           </Form.Item>
         ) : null}
         <Form.Item
@@ -151,14 +133,18 @@ export default function AddNoticeDrawer({
           label="Título"
           rules={[{ required: true, message: "Coloque um título" }]}
         >
-          <Input placeholder="Coloque seu Sobrenome" style={{ width: '100%' }} value={user?.name} />
+          <Input
+            placeholder="Coloque um título"
+            style={{ width: '100%' }}
+            onChange={(e) => setTitle(e.target.value)} value={title}
+          />
         </Form.Item>
         <Form.Item
           name="text"
           label="Aviso"
           rules={[{ required: true, message: "Preencha o aviso" }]}
         >
-          <Tiptap />
+          <Tiptap setText={setText} />
         </Form.Item>
       </Form>
     </Drawer>

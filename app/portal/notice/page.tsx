@@ -15,14 +15,14 @@ import AddNoticeDrawer from "@/app/_lib/_components/AddNoticeDrawer";
 const Documents = () => {
   const { user } = useGetUser();
   const [openDrawer, setOpenDrawer] = useState(false);
-  const [company, setCompany] = useState("");
+  const [company, setCompany] = useState<string | string[]>("");
   const [filter, setFilter] = useState({ user: "", company: "" });
   const handleChange = (value: string) => {
     console.log(`selected ${value}`);
   };
 
   useEffect(() => {
-    setFilter({ user: "", company: company });
+    setFilter({ user: "", company: "" });
   }, [company]);
 
   const onChange = (key: string) => {
@@ -65,7 +65,6 @@ const Documents = () => {
         Avisos
       </h2>
       <div style={{ paddingBottom: 10, display: "flex", flexWrap: "wrap" }}>
-        <SelectCompany setCompanys={setCompany} />
         <Select
           defaultValue="lucy"
           onChange={handleChange}
@@ -87,7 +86,7 @@ const Documents = () => {
           style={{ marginLeft: "auto", marginRight: "20px" }}
           onClick={() => setOpenDrawer(true)}
         >
-          <PlusOutlined /> Nova Solicitação
+          <PlusOutlined /> Novo aviso
         </Button>
       </div>
       <Tabs defaultActiveKey="1" items={items} onChange={onChange} />

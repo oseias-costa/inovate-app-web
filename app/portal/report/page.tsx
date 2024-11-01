@@ -15,15 +15,11 @@ import ReportTable from "@/app/_lib/_components/ReportTable";
 const Documents = () => {
   const { user } = useGetUser();
   const [openDrawer, setOpenDrawer] = useState(false);
-  const [company, setCompany] = useState("");
+  const [company, setCompany] = useState<string | string[]>("");
   const [filter, setFilter] = useState({ user: "", company: "" });
   const handleChange = (value: string) => {
     console.log(`selected ${value}`);
   };
-
-  useEffect(() => {
-    setFilter({ user: "", company: company });
-  }, [company]);
 
   const onChange = (key: string) => {
     console.log(key);
@@ -64,34 +60,13 @@ const Documents = () => {
       <h2 style={{ fontWeight: 400, paddingBottom: 25, color: "#404040" }}>
         Relatórios
       </h2>
-      {user?.type === "USER" || user?.type === "ADMIN" && (
-        <div style={{ paddingBottom: 10, display: "flex", flexWrap: "wrap" }}>
-          <SelectCompany setCompanys={setCompany} />
-          <Select
-            defaultValue="lucy"
-            onChange={handleChange}
-            options={[
-              { value: "jack", label: "Leonardo" },
-              { value: "lucy", label: "Cássio" },
-              { value: "Yiminghe", label: "Rafael" },
-              { value: "disabled", label: "Katherine", disabled: true },
-            ]}
-          />
-          <Button type="primary" disabled style={{ marginLeft: 10 }}>
-            Filtrar
-          </Button>
-          <Button type="default" style={{ marginLeft: 5 }}>
-            Limpar
-          </Button>
-          <Button
-            type="primary"
-            style={{ marginLeft: "auto", marginRight: "20px" }}
-            onClick={() => setOpenDrawer(true)}
-          >
-            <PlusOutlined /> Nova Solicitação
-          </Button>
-        </div>
-      )}
+      <Button
+        type="primary"
+        style={{ marginLeft: "auto", marginRight: "20px" }}
+        onClick={() => setOpenDrawer(true)}
+      >
+        <PlusOutlined /> Nova Solicitação
+      </Button>
       <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
       <Drawer open={openDrawer} setOpen={setOpenDrawer} />
     </div>

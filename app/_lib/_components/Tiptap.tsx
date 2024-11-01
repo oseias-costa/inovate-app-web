@@ -2,18 +2,21 @@
 
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import { useState } from 'react'
+import { Dispatch, SetStateAction, useState } from 'react'
 import Toolbar from './ToolbarEditor'
 import styled from 'styled-components'
 
-const Tiptap = () => {
+const Tiptap = ({ setText }: { setText: Dispatch<SetStateAction<string>> }) => {
   const [state, setState] = useState('')
   const [isFocused, setIsFocused] = useState(false) // Track focus state
 
   const editor = useEditor({
     extensions: [StarterKit],
     content: '<p>Hello World! 🌎️</p>',
-    onUpdate: ({ editor }) => setState(editor.getHTML())
+    onUpdate: ({ editor }) => {
+      setText(editor.getHTML())
+      setState(editor.getHTML())
+    }
   })
 
   return (
@@ -36,7 +39,8 @@ const Tiptap = () => {
             backgroundColor: '#fff',
             transition: 'border-color 0.3s, box-shadow 0.3s'
           }}
-          editor={editor} />
+          editor={editor}
+        />
       </Container>
     </div>
   )
