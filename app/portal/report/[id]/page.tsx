@@ -1,6 +1,7 @@
 "use client";
 import {
   Breadcrumb,
+  Button,
   Form,
 } from "antd";
 import dayjs from "dayjs";
@@ -13,32 +14,21 @@ import Link from "next/link";
 import isAuth from "@/app/lib/components/isAuth";
 import { useQuery } from "@tanstack/react-query";
 import { httpClient } from "@/app/lib/utils/httpClient";
+import { useState } from "react";
+import EditReport from "@/app/lib/components/EditReport";
 
 const ReportDetails = () => {
   const params = useParams();
   const id = params.id as string;
-
-  const items = [
-    {
-      title: "Aberta",
-    },
-    {
-      title: "Aguardando",
-    },
-    {
-      title: "Finalizada",
-    },
-  ];
+  const [openDrawer, setOpenDrawer] = useState(false)
 
   const { data, isLoading } = useQuery({
-    queryKey: ['request' + id],
+    queryKey: [`report-${id}`],
     queryFn: async () => httpClient({
       path: `/reports/${id}`,
       method: 'GET'
     })
   })
-
-  const date = dayjs(data?.expiration);
 
   if (isLoading) {
     return (
@@ -61,6 +51,12 @@ const ReportDetails = () => {
 
   return (
     <Form layout="vertical" hideRequiredMark>
+      <EditReport
+        setOpen={setOpenDrawer}
+        open={openDrawer}
+        key={id}
+        reportUuid={id}
+      />
       <Breadcrumb
         items={[
           { title: <Link href="/portal/dashboard">Início</Link> },
@@ -77,6 +73,7 @@ const ReportDetails = () => {
         <h2 style={{ fontWeight: 400, paddingBottom: 25, color: "#404040" }}>
           {data.title}
         </h2>
+        <Button onClick={() => setOpenDrawer(true)}>Editar</Button>
       </div>
       <div dangerouslySetInnerHTML={{ __html: data.text }} />
     </Form>

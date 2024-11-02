@@ -6,13 +6,13 @@ import { Dispatch, SetStateAction, useState } from 'react'
 import Toolbar from './ToolbarEditor'
 import styled from 'styled-components'
 
-const Tiptap = ({ setText }: { setText: Dispatch<SetStateAction<string>> }) => {
-  const [state, setState] = useState('')
+const Tiptap = ({ setText, text }: { setText: Dispatch<SetStateAction<string>>, text?: string }) => {
+  const [state, setState] = useState(text ?? '')
   const [isFocused, setIsFocused] = useState(false) // Track focus state
 
   const editor = useEditor({
     extensions: [StarterKit],
-    content: '<p>Hello World! 🌎️</p>',
+    content: text ?? '',
     onUpdate: ({ editor }) => {
       setText(editor.getHTML())
       setState(editor.getHTML())

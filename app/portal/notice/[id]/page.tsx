@@ -1,6 +1,7 @@
 "use client";
 import {
   Breadcrumb,
+  Button,
   Col,
   ConfigProvider,
   DatePicker,
@@ -13,37 +14,26 @@ import {
 import locale from "antd/locale/pt_BR";
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
-import TextArea from "antd/es/input/TextArea";
-import useGetDocumentDetails from "@/app/lib/hooks/useGetDocumentDetails";
 import { PulseLoader } from "react-spinners";
-import { InboxOutlined, StarOutlined, UploadOutlined } from "@ant-design/icons";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import Logo from "@/public/assets/logo-i.png";
 import Link from "next/link";
 import Dragger from "antd/es/upload/Dragger";
 import isAuth from "@/app/lib/components/isAuth";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { httpClient } from "@/app/lib/utils/httpClient";
+import { useState } from "react";
+import EditNotice from "@/app/lib/components/EditNotice";
 
 const NoticeDetail = () => {
   const params = useParams();
   const id = params.id as string;
-
-  const items = [
-    {
-      title: "Aberta",
-    },
-    {
-      title: "Aguardando",
-    },
-    {
-      title: "Finalizada",
-    },
-  ];
+  const [openDrawer, setOpenDrawer] = useState(false)
+  const queryClient = useQueryClient()
 
   const { data, isLoading } = useQuery({
-    queryKey: ['request' + id],
+    queryKey: [`notice-${id}`],
     queryFn: async () => httpClient({
       path: `/notice/${id}`,
       method: 'GET'
@@ -89,8 +79,13 @@ const NoticeDetail = () => {
         <h2 style={{ fontWeight: 400, paddingBottom: 25, color: "#404040" }}>
           {data.title}
         </h2>
+        <Button onClick={() => {
+          setOpenDrawer(true)
+          return queryClient.invalidateQueries({ queryKey: [`notice-${id}`] })
+        }}>Editar</Button>
       </div>
       <div dangerouslySetInnerHTML={{ __html: data.text }} />
+      <EditNotice open={openDrawer} setOpen={setOpenDrawer} noticeUuid={data?.uuid} />
     </Form>
   );
 };

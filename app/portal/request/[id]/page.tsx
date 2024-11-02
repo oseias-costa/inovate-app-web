@@ -1,6 +1,7 @@
 "use client";
 import {
   Breadcrumb,
+  Button,
   Col,
   ConfigProvider,
   DatePicker,
@@ -14,21 +15,23 @@ import locale from "antd/locale/pt_BR";
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
 import TextArea from "antd/es/input/TextArea";
-import useGetDocumentDetails from "@/app/_lib/_hooks/useGetDocumentDetails";
 import { PulseLoader } from "react-spinners";
-import { InboxOutlined, StarOutlined, UploadOutlined } from "@ant-design/icons";
+import { InboxOutlined, PlusOutlined, StarOutlined } from "@ant-design/icons";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import Logo from "@/public/assets/logo-i.png";
 import Link from "next/link";
 import Dragger from "antd/es/upload/Dragger";
-import isAuth from "@/app/_lib/_components/isAuth";
+import isAuth from "@/app/lib/components/isAuth";
 import { useQuery } from "@tanstack/react-query";
-import { httpClient } from "@/app/_lib/_utils/httpClient";
+import { httpClient } from "@/app/lib/utils/httpClient";
+import { useState } from "react";
+import EditRequest from "@/app/lib/components/EditRequest";
 
 const Request = () => {
   const params = useParams();
   const id = params.id as string;
+  const [openDrawer, setOpenDrawer] = useState(false)
 
   const items = [
     {
@@ -43,14 +46,12 @@ const Request = () => {
   ];
 
   const { data, isLoading } = useQuery({
-    queryKey: ['request' + id],
+    queryKey: [`request-${id}`],
     queryFn: async () => httpClient({
       path: `/requests/${id}`,
       method: 'GET'
     })
   })
-
-  console.log(data)
 
   const date = dayjs(data?.expiration);
 
@@ -75,6 +76,12 @@ const Request = () => {
 
   return (
     <Form layout="vertical" hideRequiredMark>
+      <EditRequest
+        open={openDrawer}
+        setOpen={setOpenDrawer}
+        requestUuid={data?.uuid}
+        key={data?.uuid}
+      />
       <Breadcrumb
         items={[
           { title: <Link href="/portal/dashboard">Início</Link> },
@@ -88,12 +95,23 @@ const Request = () => {
         style={{ paddingBottom: 10 }}
       />
       <div style={{ display: 'flex' }}>
-        <h2 style={{ fontWeight: 400, paddingBottom: 25, color: "#404040" }}>
-          Detalhes da Solicitação
-        </h2>
-        <Tag color={'geekblue'} key={data?.status} style={{ maxHeight: 20, marginTop: 6, marginLeft: 15 }}>
-          {data?.status}
-        </Tag>
+        <div>
+          <h2 style={{ fontWeight: 400, paddingBottom: 25, color: "#404040" }}>
+            Detalhes da Solicitação
+          </h2>
+          <Tag color={'geekblue'} key={data?.status} style={{ maxHeight: 20, marginTop: 6, marginLeft: 15 }}>
+            {data?.status}
+          </Tag>
+        </div>
+
+        <Button
+          type="primary"
+          style={{ marginLeft: "auto", marginRight: "20px" }}
+          onClick={() => setOpenDrawer(true)}
+        >
+          <PlusOutlined /> Editar solicitação
+        </Button>
+
       </div>
       {/* <Steps
         size="small"
