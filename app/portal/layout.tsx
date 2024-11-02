@@ -1,11 +1,11 @@
 "use client";
 import styled from "styled-components";
-import Header from "../_lib/_components/Header";
-import Menu from "../_lib/_components/Menu";
-import useGetUser from "../_lib/_hooks/useGetUser";
-import { useObserveElementWidth } from "../_lib/_hooks/useObserveElementWidth";
+import Header from "../lib/components/Header";
+import Menu from "../lib/components/Menu";
+import useGetUser from "../lib/hooks/useGetUser";
+import { useObserveElementWidth } from "../lib/hooks/useObserveElementWidth";
 import { useState } from "react";
-import Spinner from "../_lib/_components/Spinner";
+import Spinner from "../lib/components/Spinner";
 
 export default function Layout({
   children,

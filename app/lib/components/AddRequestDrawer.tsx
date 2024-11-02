@@ -17,7 +17,7 @@ import TextArea from "antd/es/input/TextArea";
 import locale from "antd/locale/pt_BR";
 import "dayjs/locale/pt-br";
 import SelectCompany from "./SelectCompany";
-import useGetUser from "../_hooks/useGetUser";
+import useGetUser from "../hooks/useGetUser";
 import axios, { AxiosError } from "axios";
 import {
   useIsMutating,
@@ -85,15 +85,15 @@ export default function DrawerComponent({
       return queryClient.invalidateQueries({ queryKey: ["documents"] });
     },
     onError: (error: AxiosError | any) => {
-      if(error.response){
+      if (error.response) {
         message.error(error.response?.data.message)
       }
     }
   });
   console.log('user', user)
 
-  if(!user){
-    return(<p>Loading</p>)
+  if (!user) {
+    return (<p>Loading</p>)
   }
 
   return (
@@ -134,7 +134,7 @@ export default function DrawerComponent({
               initialValue={user?.name}
               rules={[{ required: true, message: "Coloque seu Sobrenome" }]}
             >
-              <Input placeholder="Coloque seu Sobrenome" disabled value={user?.name}/>
+              <Input placeholder="Coloque seu Sobrenome" disabled value={user?.name} />
             </Form.Item>
           </Col>
         </Row>

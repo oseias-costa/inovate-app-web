@@ -13,12 +13,12 @@ import {
   UploadProps,
   message,
 } from "antd";
-import SelectCompany from "@/app/_lib/_components/SelectCompany";
+import SelectCompany from "@/app/lib/components/SelectCompany";
 import locale from "antd/locale/pt_BR";
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
 import TextArea from "antd/es/input/TextArea";
-import useGetDocumentDetails from "@/app/_lib/_hooks/useGetDocumentDetails";
+import useGetDocumentDetails from "@/app/lib/hooks/useGetDocumentDetails";
 import { PulseLoader } from "react-spinners";
 import { useIsMutating, useMutation } from "@tanstack/react-query";
 import { UploadOutlined } from "@ant-design/icons";
@@ -59,31 +59,31 @@ export default function DocumentDetails({
   const onClose = () => setOpen(false);
   const [file, setFile] = useState<File>()
   const isMutation = useIsMutating({ mutationKey: ["documents"], exact: true });
-  
-  console.log(data)
-  const updateDocument = async(file: any) => {
-    await axios({
-        method: 'post',
-        baseURL: `http://localhost:3009/document/upload/${data?.companyId}`,
-        data: file,
-        
-        headers: { 
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-            "Content-Type": 'application/x-www-form-urlencoded'
-        }
-    })
-}
 
-const mutation = useMutation({
+  console.log(data)
+  const updateDocument = async (file: any) => {
+    await axios({
+      method: 'post',
+      baseURL: `http://localhost:3009/document/upload/${data?.companyId}`,
+      data: file,
+
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+        "Content-Type": 'application/x-www-form-urlencoded'
+      }
+    })
+  }
+
+  const mutation = useMutation({
     mutationFn: updateDocument,
     mutationKey: [id]
-})
+  })
 
-    useEffect(() => {
-        if(mutation.error){
-            console.log(mutation.error)
-        }
-    },[mutation])
+  useEffect(() => {
+    if (mutation.error) {
+      console.log(mutation.error)
+    }
+  }, [mutation])
 
   return (
     <Drawer
@@ -176,8 +176,8 @@ const mutation = useMutation({
               rules={[{ required: true, message: "Coloque seu Sobrenome" }]}
               initialValue={data?.document}
             >
-              <Upload 
-                name="file" 
+              <Upload
+                name="file"
                 action={`http://localhost:3009/document/upload/${data?.companyId}`}
                 // beforeUpload={async (file) => {
                 //     // setFile(file)
@@ -187,9 +187,10 @@ const mutation = useMutation({
 
                 // } 
                 headers={{
-                  Authorization: `Bearer ${localStorage.getItem('token')}`}
+                  Authorization: `Bearer ${localStorage.getItem('token')}`
                 }
-             >
+                }
+              >
                 <Button style={{ marginBottom: 10 }} icon={<UploadOutlined />}>
                   Selecione o Documento
                 </Button>

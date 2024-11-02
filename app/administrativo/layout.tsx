@@ -1,8 +1,8 @@
 "use client";
 import styled from "styled-components";
-import Header from "../_lib/_components/Header";
-import Menu from "../_lib/_components/Menu";
-import useGetUser from "../_lib/_hooks/useGetUser";
+import Header from "../lib/components/Header";
+import Menu from "../lib/components/Menu";
+import useGetUser from "../lib/hooks/useGetUser";
 import { useState } from "react";
 
 export default function Layout({

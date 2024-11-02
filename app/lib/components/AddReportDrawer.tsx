@@ -5,7 +5,6 @@ import {
   Drawer,
   Form,
   Input,
-  Select,
   Space,
   message,
 } from "antd";
@@ -19,40 +18,39 @@ import {
 } from "@tanstack/react-query";
 import PulseLoader from "react-spinners/PulseLoader";
 import Tiptap from "./Tiptap";
-import { httpClient } from "../_utils/httpClient";
-import Tynymce from "./Tynymce";
-import SelectUsers from "./SelectUsers";
+import { httpClient } from "../utils/httpClient";
 
 type DrawerComponentProps = {
   open: boolean;
   setOpen: React.Dispatch<SetStateAction<boolean>>;
 };
 
-export default function AddNoticeDrawer({
+export default function AddReportDrawer({
   open,
   setOpen,
 }: DrawerComponentProps) {
   const [companys, setCompanys] = useState<string | string[]>([]);
   const [title, setTitle] = useState('')
   const [text, setText] = useState('')
-  const [type, setType] = useState('')
   const queryClient = useQueryClient();
-
-  const users = typeof companys !== 'string' && companys.map((user) => ({ name: '', uuid: user }))
 
   const createNotice = useMutation({
     mutationKey: ['create-notice'],
     mutationFn: async () => await httpClient({
-      path: '/notice',
+      path: '/reports',
       method: 'POST',
-      data: { title, text, users, type }
+      data: {
+        title,
+        text,
+        companyUuid: companys,
+        authorUuid: 'be0f7f95-7545-11ef-84ca-047c62762b75'
+      }
     }),
     onSuccess: () => {
       setOpen(false)
       setTitle('')
       setText('')
       setCompanys([])
-      setType('')
       return queryClient.invalidateQueries({ queryKey: ["notice-page"] });
     },
     onError: (error: AxiosError | any) => {
@@ -66,7 +64,7 @@ export default function AddNoticeDrawer({
 
   return (
     <Drawer
-      title="Criar aviso"
+      title="Novo relatório"
       width={720}
       onClose={() => setOpen(false)}
       open={open}
@@ -86,48 +84,15 @@ export default function AddNoticeDrawer({
     >
       <Form layout="vertical" hideRequiredMark>
         <Form.Item
-          name="type"
-          label="Escolha para quem deseja enviar"
+          name="name"
+          label="Empresa"
           rules={[{ required: true, message: "Selecione uma empresa" }]}
         >
-
-          <Select
-            style={{ width: '100%' }}
-            onChange={(e) => setType(e)}
-            options={[
-              { value: 'SELECTED_COMPANYS', label: 'Selecione as empresas' },
-              { value: 'SELECTED_USERS', label: 'Selecione os coloboradores' },
-              { value: 'ALL_COMPANYS', label: 'Todas as empresas' },
-              { value: 'ALL_USERS', label: 'Todos os colaboradores', },
-            ]}
+          <SelectCompany
+            setCompanys={setCompanys}
+            companys={companys}
           />
         </Form.Item>
-        {type === "SELECTED_COMPANYS" ? (
-          <Form.Item
-            name="name"
-            label="Empresa"
-            rules={[{ required: true, message: "Selecione uma empresa" }]}
-          >
-            <SelectCompany
-              setCompanys={setCompanys}
-              companys={companys}
-              mode="multiple"
-            />
-          </Form.Item>
-        ) : null}
-        {type === "SELECTED_USERS" ? (
-          <Form.Item
-            name="users"
-            label="Usuários"
-            rules={[{ required: true, message: "Selecione os usuários" }]}
-          >
-            <SelectUsers
-              setUsers={setCompanys}
-              users={companys}
-              mode="multiple"
-            />
-          </Form.Item>
-        ) : null}
         <Form.Item
           name="title"
           label="Título"
@@ -141,8 +106,8 @@ export default function AddNoticeDrawer({
         </Form.Item>
         <Form.Item
           name="text"
-          label="Aviso"
-          rules={[{ required: true, message: "Preencha o aviso" }]}
+          label="Descrição"
+          rules={[{ required: true, message: "Preencha uma descrição" }]}
         >
           <Tiptap setText={setText} />
         </Form.Item>

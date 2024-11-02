@@ -9,8 +9,8 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import PulseLoader from "react-spinners/PulseLoader";
-import useGetUser from "@/app/_lib/_hooks/useGetUser";
-import Spinner from "@/app/_lib/_components/Spinner";
+import useGetUser from "@/app/lib/hooks/useGetUser";
+import Spinner from "@/app/lib/components/Spinner";
 
 type DrawerComponentProps = {
   open: boolean;
@@ -53,13 +53,13 @@ export default function DrawerUpdateUserData({ open, setOpen }: DrawerComponentP
       return queryClient.invalidateQueries({ queryKey: ["user"] });
     },
     onError: (error: AxiosError | any) => {
-      if(error.response){
+      if (error.response) {
         message.error(error.response?.data.message[0])
       }
     },
   });
 
-  if(!user) {
+  if (!user) {
     return <Spinner />
   }
 

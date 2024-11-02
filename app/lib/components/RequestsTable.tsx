@@ -6,16 +6,15 @@ import { Document } from "../types/document.type";
 import DocumentDetails from "@/app/portal/documentos/utils/DocumentDetails";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
-import useGetUser from "../_hooks/useGetUser";
-import { httpClient } from "../_utils/httpClient";
-import { Notice } from "../types/notice.type";
-import { Report } from "../types/report.type";
+import useGetUser from "../hooks/useGetUser";
+import { httpClient } from "../utils/httpClient";
 
 interface DataType {
-  uuid: string
-  title: string;
+  key: string;
   company: string;
-  createdAt: string;
+  documentName: string;
+  age: string;
+  status: string;
 }
 
 type TableDocumentsProps = {
@@ -27,7 +26,7 @@ type TableDocumentsProps = {
   status: '' | 'PENDING' | 'DUE' | 'FINISH'
 };
 
-const ReportTable = ({ filter, setFilter, status }: TableDocumentsProps) => {
+const RequestsTable = ({ filter, setFilter, status }: TableDocumentsProps) => {
   const [openDocumentDetais, setOpenDocumentDetais] = useState(false);
   const [documentId, setDocumentId] = useState("");
   const queryClient = useQueryClient();
@@ -43,9 +42,9 @@ const ReportTable = ({ filter, setFilter, status }: TableDocumentsProps) => {
 
   const columns: TableProps<DataType>["columns"] = [
     {
-      title: "Título",
-      dataIndex: "title",
-      key: "title",
+      title: "Documento",
+      dataIndex: "documentName",
+      key: "documentName",
     },
     {
       title: "Empresa",
@@ -53,16 +52,41 @@ const ReportTable = ({ filter, setFilter, status }: TableDocumentsProps) => {
       key: "company",
     },
     {
-      title: "Data",
-      dataIndex: "createdAt",
-      key: "createdAt",
+      title: "Prazo",
+      dataIndex: "age",
+      key: "age",
       render: (v) => {
         const date = dayjs(v).format("DD-MM-YYYY");
         return <p>{date}</p>;
       },
     },
     {
-      title: "Ver",
+      title: "Status",
+      key: "status",
+      dataIndex: "status",
+      render: (status) => {
+        let color;
+        switch (status) {
+          case "EXPIRED":
+            color = "volcano";
+            break;
+          case "PEDING":
+            color = "geekblue";
+            break;
+          case "FINISH":
+            color = "green";
+            break;
+        }
+
+        return (
+          <Tag color={color} key={status}>
+            {status}
+          </Tag>
+        );
+      },
+    },
+    {
+      title: "Solicitante",
       key: "action",
       render: (_, record) => (
         <Space size="middle">
@@ -70,34 +94,36 @@ const ReportTable = ({ filter, setFilter, status }: TableDocumentsProps) => {
             type="text"
             style={{ color: "#1677ff" }}
             onClick={() => {
-              router.push(`/portal/report/${record.uuid}`);
+              router.push(`/portal/request/${record.key}`);
               return queryClient.invalidateQueries({
-                queryKey: ["report-detail"],
+                queryKey: ["document-detail"],
               });
             }}
           >
-            Ver
+            Detalhes
           </Button>
         </Space>
       ),
     },
   ];
 
-  const { data, isLoading } = useQuery<Reports>({
-    queryKey: [`report-page`, pagination.page],
+  const { data: docs, isLoading } = useQuery<Documents>({
+    queryKey: [`document-page`, pagination.page, status],
     queryFn: async () => httpClient({
-      path: '/reports',
+      path: '/requests',
       method: 'GET',
       queryString: {
         page: pagination.page,
         limit: pagination.limit,
-        companyUuid: '93ef1356-761d-11ef-84ca-047c62762b75',
+        filter: filter.company,
+        companyUuid: 'fd57b31d-8db4-11ef-aa1b-01092cc04206',
+        status
       }
     })
   });
 
-  type Reports = {
-    items: Report[];
+  type Documents = {
+    items: Document[];
     meta: {
       totalItems: number;
       itemCount: number;
@@ -108,12 +134,13 @@ const ReportTable = ({ filter, setFilter, status }: TableDocumentsProps) => {
   };
 
   let options: DataType[] = [];
-  const convertData = data?.items?.map((item: any) => {
+  const convertData = docs?.items?.map((item: any) => {
     options.push({
-      uuid: item.uuid,
-      title: item.title,
+      key: item.uuid,
       company: item.company,
-      createdAt: item.createdAt,
+      documentName: item.documentName,
+      age: item.expiration,
+      status: item.status,
     });
   });
 
@@ -128,9 +155,9 @@ const ReportTable = ({ filter, setFilter, status }: TableDocumentsProps) => {
         columns={columns}
         dataSource={options}
         pagination={{
-          current: data?.meta.currentPage,
-          pageSize: data?.meta.itemsPerPage,
-          total: data?.meta.totalItems,
+          current: docs?.meta.currentPage,
+          pageSize: docs?.meta.itemsPerPage,
+          total: docs?.meta.totalItems,
         }}
         onChange={(item) => {
           setPagination({ ...pagination, page: String(item["current"]) });
@@ -141,4 +168,4 @@ const ReportTable = ({ filter, setFilter, status }: TableDocumentsProps) => {
   );
 };
 
-export default ReportTable;
+export default RequestsTable;

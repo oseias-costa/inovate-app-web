@@ -6,14 +6,15 @@ import { Document } from "../types/document.type";
 import DocumentDetails from "@/app/portal/documentos/utils/DocumentDetails";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
-import useGetUser from "../_hooks/useGetUser";
-import { httpClient } from "../_utils/httpClient";
+import useGetUser from "../hooks/useGetUser";
+import { httpClient } from "../utils/httpClient";
 import { Notice } from "../types/notice.type";
+import { Report } from "../types/report.type";
 
 interface DataType {
   uuid: string
   title: string;
-  user: string;
+  company: string;
   createdAt: string;
 }
 
@@ -26,7 +27,7 @@ type TableDocumentsProps = {
   status: '' | 'PENDING' | 'DUE' | 'FINISH'
 };
 
-const NoticeTable = ({ filter, setFilter, status }: TableDocumentsProps) => {
+const ReportTable = ({ filter, setFilter, status }: TableDocumentsProps) => {
   const [openDocumentDetais, setOpenDocumentDetais] = useState(false);
   const [documentId, setDocumentId] = useState("");
   const queryClient = useQueryClient();
@@ -47,9 +48,9 @@ const NoticeTable = ({ filter, setFilter, status }: TableDocumentsProps) => {
       key: "title",
     },
     {
-      title: "Usuário",
-      dataIndex: "user",
-      key: "user",
+      title: "Empresa",
+      dataIndex: "company",
+      key: "company",
     },
     {
       title: "Data",
@@ -69,9 +70,9 @@ const NoticeTable = ({ filter, setFilter, status }: TableDocumentsProps) => {
             type="text"
             style={{ color: "#1677ff" }}
             onClick={() => {
-              router.push(`/portal/notice/${record.uuid}`);
+              router.push(`/portal/report/${record.uuid}`);
               return queryClient.invalidateQueries({
-                queryKey: ["notice-detail"],
+                queryKey: ["report-detail"],
               });
             }}
           >
@@ -82,21 +83,21 @@ const NoticeTable = ({ filter, setFilter, status }: TableDocumentsProps) => {
     },
   ];
 
-  const { data: docs, isLoading } = useQuery<Notices>({
-    queryKey: [`notice-page`, pagination.page],
+  const { data, isLoading } = useQuery<Reports>({
+    queryKey: [`report-page`, pagination.page],
     queryFn: async () => httpClient({
-      path: '/notice',
+      path: '/reports',
       method: 'GET',
       queryString: {
         page: pagination.page,
         limit: pagination.limit,
-        uuid: 'fd57b31d-8db4-11ef-aa1b-01092cc04206',
+        companyUuid: '93ef1356-761d-11ef-84ca-047c62762b75',
       }
     })
   });
 
-  type Notices = {
-    items: Notice[];
+  type Reports = {
+    items: Report[];
     meta: {
       totalItems: number;
       itemCount: number;
@@ -107,11 +108,11 @@ const NoticeTable = ({ filter, setFilter, status }: TableDocumentsProps) => {
   };
 
   let options: DataType[] = [];
-  const convertData = docs?.items?.map((item: any) => {
+  const convertData = data?.items?.map((item: any) => {
     options.push({
       uuid: item.uuid,
       title: item.title,
-      user: item.user,
+      company: item.company,
       createdAt: item.createdAt,
     });
   });
@@ -127,9 +128,9 @@ const NoticeTable = ({ filter, setFilter, status }: TableDocumentsProps) => {
         columns={columns}
         dataSource={options}
         pagination={{
-          current: docs?.meta.currentPage,
-          pageSize: docs?.meta.itemsPerPage,
-          total: docs?.meta.totalItems,
+          current: data?.meta.currentPage,
+          pageSize: data?.meta.itemsPerPage,
+          total: data?.meta.totalItems,
         }}
         onChange={(item) => {
           setPagination({ ...pagination, page: String(item["current"]) });
@@ -140,4 +141,4 @@ const NoticeTable = ({ filter, setFilter, status }: TableDocumentsProps) => {
   );
 };
 
-export default NoticeTable;
+export default ReportTable;

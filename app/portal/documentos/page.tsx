@@ -1,14 +1,13 @@
 "use client";
-import isAuth from "../../_lib/_components/isAuth";
+import isAuth from "../../lib/components/isAuth";
 import Title from "antd/es/typography/Title";
 import { Breadcrumb, Button, Select, Tabs, TabsProps } from "antd";
-import TableAnt from "@/app/_lib/_components/TableAnt";
-import Drawer from "@/app/_lib/_components/Drawer";
+import Drawer from "@/app/lib/components/AddRequestDrawer";
 import { useEffect, useState } from "react";
-import useGetUser from "@/app/_lib/_hooks/useGetUser";
+import useGetUser from "@/app/lib/hooks/useGetUser";
 import Link from "next/link";
 import { PlusOutlined } from "@ant-design/icons";
-import SelectCompany from "@/app/_lib/_components/SelectCompany";
+import SelectCompany from "@/app/lib/components/SelectCompany";
 
 const Documents = () => {
   const { user } = useGetUser();

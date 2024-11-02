@@ -11,7 +11,7 @@ import type { MenuProps } from "antd";
 import { Menu as MenuAnt } from "antd";
 import Sider from "antd/lib/layout/Sider";
 import styled from "styled-components";
-import useGetUser from "../_hooks/useGetUser";
+import useGetUser from "../hooks/useGetUser";
 
 type MenuItem = Required<MenuProps>["items"][number];
 

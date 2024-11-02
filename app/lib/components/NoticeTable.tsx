@@ -6,15 +6,15 @@ import { Document } from "../types/document.type";
 import DocumentDetails from "@/app/portal/documentos/utils/DocumentDetails";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
-import useGetUser from "../_hooks/useGetUser";
-import { httpClient } from "../_utils/httpClient";
+import useGetUser from "../hooks/useGetUser";
+import { httpClient } from "../utils/httpClient";
+import { Notice } from "../types/notice.type";
 
 interface DataType {
-  key: string;
-  company: string;
-  documentName: string;
-  age: string;
-  status: string;
+  uuid: string
+  title: string;
+  user: string;
+  createdAt: string;
 }
 
 type TableDocumentsProps = {
@@ -26,7 +26,7 @@ type TableDocumentsProps = {
   status: '' | 'PENDING' | 'DUE' | 'FINISH'
 };
 
-const RequestsTable = ({ filter, setFilter, status }: TableDocumentsProps) => {
+const NoticeTable = ({ filter, setFilter, status }: TableDocumentsProps) => {
   const [openDocumentDetais, setOpenDocumentDetais] = useState(false);
   const [documentId, setDocumentId] = useState("");
   const queryClient = useQueryClient();
@@ -42,51 +42,26 @@ const RequestsTable = ({ filter, setFilter, status }: TableDocumentsProps) => {
 
   const columns: TableProps<DataType>["columns"] = [
     {
-      title: "Documento",
-      dataIndex: "documentName",
-      key: "documentName",
+      title: "Título",
+      dataIndex: "title",
+      key: "title",
     },
     {
-      title: "Empresa",
-      dataIndex: "company",
-      key: "company",
+      title: "Usuário",
+      dataIndex: "user",
+      key: "user",
     },
     {
-      title: "Prazo",
-      dataIndex: "age",
-      key: "age",
+      title: "Data",
+      dataIndex: "createdAt",
+      key: "createdAt",
       render: (v) => {
         const date = dayjs(v).format("DD-MM-YYYY");
         return <p>{date}</p>;
       },
     },
     {
-      title: "Status",
-      key: "status",
-      dataIndex: "status",
-      render: (status) => {
-        let color;
-        switch (status) {
-          case "EXPIRED":
-            color = "volcano";
-            break;
-          case "PEDING":
-            color = "geekblue";
-            break;
-          case "FINISH":
-            color = "green";
-            break;
-        }
-
-        return (
-          <Tag color={color} key={status}>
-            {status}
-          </Tag>
-        );
-      },
-    },
-    {
-      title: "Solicitante",
+      title: "Ver",
       key: "action",
       render: (_, record) => (
         <Space size="middle">
@@ -94,36 +69,34 @@ const RequestsTable = ({ filter, setFilter, status }: TableDocumentsProps) => {
             type="text"
             style={{ color: "#1677ff" }}
             onClick={() => {
-              router.push(`/portal/request/${record.key}`);
+              router.push(`/portal/notice/${record.uuid}`);
               return queryClient.invalidateQueries({
-                queryKey: ["document-detail"],
+                queryKey: ["notice-detail"],
               });
             }}
           >
-            Detalhes
+            Ver
           </Button>
         </Space>
       ),
     },
   ];
 
-  const { data: docs, isLoading } = useQuery<Documents>({
-    queryKey: [`document-page`, pagination.page, status],
+  const { data: docs, isLoading } = useQuery<Notices>({
+    queryKey: [`notice-page`, pagination.page],
     queryFn: async () => httpClient({
-      path: '/requests',
+      path: '/notice',
       method: 'GET',
       queryString: {
         page: pagination.page,
         limit: pagination.limit,
-        filter: filter.company,
-        companyUuid: 'fd57b31d-8db4-11ef-aa1b-01092cc04206',
-        status
+        uuid: 'fd57b31d-8db4-11ef-aa1b-01092cc04206',
       }
     })
   });
 
-  type Documents = {
-    items: Document[];
+  type Notices = {
+    items: Notice[];
     meta: {
       totalItems: number;
       itemCount: number;
@@ -136,11 +109,10 @@ const RequestsTable = ({ filter, setFilter, status }: TableDocumentsProps) => {
   let options: DataType[] = [];
   const convertData = docs?.items?.map((item: any) => {
     options.push({
-      key: item.uuid,
-      company: item.company,
-      documentName: item.documentName,
-      age: item.expiration,
-      status: item.status,
+      uuid: item.uuid,
+      title: item.title,
+      user: item.user,
+      createdAt: item.createdAt,
     });
   });
 
@@ -168,4 +140,4 @@ const RequestsTable = ({ filter, setFilter, status }: TableDocumentsProps) => {
   );
 };
 
-export default RequestsTable;
+export default NoticeTable;

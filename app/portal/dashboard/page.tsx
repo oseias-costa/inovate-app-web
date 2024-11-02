@@ -1,7 +1,7 @@
 "use client";
 import { useQueryClient } from "@tanstack/react-query";
-import isAuth from "../../_lib/_components/isAuth";
-import Header from "../../_lib/_components/Header";
+import isAuth from "../../lib/components/isAuth";
+import Header from "../../lib/components/Header";
 import { Breadcrumb } from "antd";
 import Link from "next/link";
 

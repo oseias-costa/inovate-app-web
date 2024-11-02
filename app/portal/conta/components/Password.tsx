@@ -1,4 +1,4 @@
-import useGetUser from "@/app/_lib/_hooks/useGetUser";
+import useGetUser from "@/app/lib/hooks/useGetUser";
 import { UserOutlined } from "@ant-design/icons";
 import { Alert, Avatar, Button, Input, Typography } from "antd";
 import styled from "styled-components";

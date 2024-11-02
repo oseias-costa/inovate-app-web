@@ -10,9 +10,9 @@ import { useParams } from "next/navigation";
 import Image from "next/image";
 import Logo from "@/public/assets/logo-i.png";
 import Link from "next/link";
-import isAuth from "@/app/_lib/_components/isAuth";
+import isAuth from "@/app/lib/components/isAuth";
 import { useQuery } from "@tanstack/react-query";
-import { httpClient } from "@/app/_lib/_utils/httpClient";
+import { httpClient } from "@/app/lib/utils/httpClient";
 
 const ReportDetails = () => {
   const params = useParams();

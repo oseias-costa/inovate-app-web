@@ -1,5 +1,5 @@
 "use client"
-import isAuth from "@/app/_lib/_components/isAuth";
+import isAuth from "@/app/lib/components/isAuth";
 import { Breadcrumb } from "antd";
 import Link from "next/link";
 

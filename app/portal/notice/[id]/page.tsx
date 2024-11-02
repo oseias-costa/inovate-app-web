@@ -14,7 +14,7 @@ import locale from "antd/locale/pt_BR";
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
 import TextArea from "antd/es/input/TextArea";
-import useGetDocumentDetails from "@/app/_lib/_hooks/useGetDocumentDetails";
+import useGetDocumentDetails from "@/app/lib/hooks/useGetDocumentDetails";
 import { PulseLoader } from "react-spinners";
 import { InboxOutlined, StarOutlined, UploadOutlined } from "@ant-design/icons";
 import { useParams } from "next/navigation";
@@ -22,9 +22,9 @@ import Image from "next/image";
 import Logo from "@/public/assets/logo-i.png";
 import Link from "next/link";
 import Dragger from "antd/es/upload/Dragger";
-import isAuth from "@/app/_lib/_components/isAuth";
+import isAuth from "@/app/lib/components/isAuth";
 import { useQuery } from "@tanstack/react-query";
-import { httpClient } from "@/app/_lib/_utils/httpClient";
+import { httpClient } from "@/app/lib/utils/httpClient";
 
 const NoticeDetail = () => {
   const params = useParams();

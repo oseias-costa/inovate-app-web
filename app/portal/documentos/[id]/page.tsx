@@ -14,7 +14,7 @@ import locale from "antd/locale/pt_BR";
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
 import TextArea from "antd/es/input/TextArea";
-import useGetDocumentDetails from "@/app/_lib/_hooks/useGetDocumentDetails";
+import useGetDocumentDetails from "@/app/lib/hooks/useGetDocumentDetails";
 import { PulseLoader } from "react-spinners";
 import { InboxOutlined, StarOutlined, UploadOutlined } from "@ant-design/icons";
 import { useParams } from "next/navigation";
@@ -22,7 +22,7 @@ import Image from "next/image";
 import Logo from "@/public/assets/logo-i.png";
 import Link from "next/link";
 import Dragger from "antd/es/upload/Dragger";
-import isAuth from "@/app/_lib/_components/isAuth";
+import isAuth from "@/app/lib/components/isAuth";
 
 const DocumentPage = () => {
   const params = useParams();
@@ -75,13 +75,13 @@ const DocumentPage = () => {
         ]}
         style={{ paddingBottom: 10 }}
       />
-      <div style={{display: 'flex'}}>  
-      <h2 style={{ fontWeight: 400, paddingBottom: 25, color: "#404040" }}>
-        Detalhes da Solicitação
-      </h2>
-      <Tag color={'geekblue'} key={data?.status} style={{maxHeight: 20, marginTop: 6, marginLeft: 15}}>
-              {data?.status}
-            </Tag>
+      <div style={{ display: 'flex' }}>
+        <h2 style={{ fontWeight: 400, paddingBottom: 25, color: "#404040" }}>
+          Detalhes da Solicitação
+        </h2>
+        <Tag color={'geekblue'} key={data?.status} style={{ maxHeight: 20, marginTop: 6, marginLeft: 15 }}>
+          {data?.status}
+        </Tag>
       </div>
       {/* <Steps
         size="small"

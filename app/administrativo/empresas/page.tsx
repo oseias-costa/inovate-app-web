@@ -1,5 +1,5 @@
 "use client";
-import isAuth from "@/app/_lib/_components/isAuth";
+import isAuth from "@/app/lib/components/isAuth";
 import { Breadcrumb, Button, Tabs, TabsProps } from "antd";
 import Link from "next/link";
 import TableCompanys from "./utils/TableActiveCompanys";
@@ -37,19 +37,19 @@ const Companys = () => {
         ]}
         style={{ paddingBottom: 10 }}
       />
-      <div style={{display: 'flex'}}>
+      <div style={{ display: 'flex' }}>
 
-      <h2 style={{ fontWeight: 400, paddingBottom: 25, color: "#404040" }}>
-        Empresas
-      </h2>
-      <Button
-        type="primary"
-        style={{ marginLeft: "auto", marginRight: "20px" }}
-        onClick={() => setOpenDrawer(true)}
+        <h2 style={{ fontWeight: 400, paddingBottom: 25, color: "#404040" }}>
+          Empresas
+        </h2>
+        <Button
+          type="primary"
+          style={{ marginLeft: "auto", marginRight: "20px" }}
+          onClick={() => setOpenDrawer(true)}
         >
-        <PlusOutlined /> Adicionar Empresa
-      </Button>
-    </div>
+          <PlusOutlined /> Adicionar Empresa
+        </Button>
+      </div>
       <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
       <DrawerCompany open={openDrawer} setOpen={setOpenDrawer} />
     </div>

@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import DrawerCompany from './DrawerCompany';
-import { Company } from '@/app/_lib/types/company.type';
+import { Company } from '@/app/lib/types/company.type';
 
 interface CompanyTableType {
   id: string;
@@ -14,17 +14,17 @@ interface CompanyTableType {
   status: string;
 }
 
-const TableActiveCompanys: React.FC = () => { 
+const TableActiveCompanys: React.FC = () => {
 
   const getCompanysByStatus = async () => {
     const data = await axios({
       method: 'get',
       baseURL: 'http://localhost:3009/users/companys/ACTIVE',
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}`}
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
     })
     return data.data
   }
-  
+
   const { data } = useQuery<Company[]>({
     queryKey: ['companys-active'],
     queryFn: getCompanysByStatus
@@ -38,7 +38,7 @@ const TableActiveCompanys: React.FC = () => {
       title: 'Empresa',
       dataIndex: 'name',
       key: 'name',
-      render:  (id) => {
+      render: (id) => {
         return <p>{id}</p>
       }
     },
@@ -54,8 +54,8 @@ const TableActiveCompanys: React.FC = () => {
       dataIndex: 'status',
       render: (status) => {
         console.log('COLORRRRRRRR', status)
-        let color 
-         switch(status) {
+        let color
+        switch (status) {
           case 'EXPIRED':
             color = 'volcano'
             break
@@ -65,13 +65,13 @@ const TableActiveCompanys: React.FC = () => {
           case 'FINISH':
             color = 'green'
             break
-         } 
-         console.log('COLORRRRRRRR', color)
-          return( 
-            <Tag color={color} key={status}>
-              {status}
-            </Tag>
-          )
+        }
+        console.log('COLORRRRRRRR', color)
+        return (
+          <Tag color={color} key={status}>
+            {status}
+          </Tag>
+        )
       }
     },
     {
@@ -79,33 +79,35 @@ const TableActiveCompanys: React.FC = () => {
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
-          <Button type='text' style={{color: '#1677ff'}} onClick={() => {
+          <Button type='text' style={{ color: '#1677ff' }} onClick={() => {
             router.push(`/portal/documentos/${record.id}`)
-            return queryClient.invalidateQueries({queryKey: ['document-detail']})
+            return queryClient.invalidateQueries({ queryKey: ['document-detail'] })
           }}>Editar</Button>
         </Space>
       ),
     },
   ];
 
-let options: CompanyTableType[] = []
-console.log(data)
-const convertData = data?.map((item: any) => {
-options.push({id: item.id, name: item.name, email: item.email, status: item.status})})
+  let options: CompanyTableType[] = []
+  console.log(data)
+  const convertData = data?.map((item: any) => {
+    options.push({ id: item.id, name: item.name, email: item.email, status: item.status })
+  })
 
-  return(
+  return (
     <>
-      <DrawerCompany 
-        open={openDocumentDetais} 
-        setOpen={setOpenDocumentDetais}  
-            />
-      <Table 
+      <DrawerCompany
+        open={openDocumentDetais}
+        setOpen={setOpenDocumentDetais}
+      />
+      <Table
         loading={!data}
-        columns={columns} 
-        dataSource={options} 
-        style={{width: 'calc(100vw - 326px)'}} 
-        />
-      </>
-)};
+        columns={columns}
+        dataSource={options}
+        style={{ width: 'calc(100vw - 326px)' }}
+      />
+    </>
+  )
+};
 
 export default TableActiveCompanys;

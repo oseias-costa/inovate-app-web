@@ -9,7 +9,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import PulseLoader from "react-spinners/PulseLoader";
-import useGetUser from "@/app/_lib/_hooks/useGetUser";
+import useGetUser from "@/app/lib/hooks/useGetUser";
 
 type DrawerComponentProps = {
   open: boolean;
@@ -54,7 +54,7 @@ export default function DrawerCompany({ open, setOpen }: DrawerComponentProps) {
       return queryClient.invalidateQueries({ queryKey: ["companys"] });
     },
     onError: (error: AxiosError | any) => {
-      if(error.response){
+      if (error.response) {
         message.error(error.response?.data.message[0])
       }
     },

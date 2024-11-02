@@ -8,8 +8,8 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import PulseLoader from "react-spinners/PulseLoader";
-import useGetUser from "@/app/_lib/_hooks/useGetUser";
-import Spinner from "@/app/_lib/_components/Spinner";
+import useGetUser from "@/app/lib/hooks/useGetUser";
+import Spinner from "@/app/lib/components/Spinner";
 
 type DrawerComponentProps = {
   open: boolean;
@@ -107,7 +107,7 @@ export default function DrawerUpdatePassword({
         <Form.Item
           name="name"
           label="Nova senha"
-          rules={[{ message: "Coloque a nova senha", min: 6}]}
+          rules={[{ message: "Coloque a nova senha", min: 6 }]}
         >
           <Input
             onChange={(e) => setPasswordData({ ...passwordData, password: e.target.value })}

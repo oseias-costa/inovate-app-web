@@ -1,5 +1,5 @@
 "use client";
-import isAuth from "@/app/_lib/_components/isAuth";
+import isAuth from "@/app/lib/components/isAuth";
 import { Breadcrumb, Tabs, TabsProps } from "antd";
 import Link from "next/link";
 import Data from "./components/Data";
