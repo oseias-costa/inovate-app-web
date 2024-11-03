@@ -12,6 +12,7 @@ import weekday from 'dayjs/plugin/weekday'
 import weekOfYear from 'dayjs/plugin/weekOfYear'
 import weekYear from 'dayjs/plugin/weekYear'
 import 'dayjs/locale/pt-br'
+import { UserProvider } from "./lib/components/UserProvider";
 
 dayjs.extend(customParseFormat)
 dayjs.extend(advancedFormat)
@@ -22,9 +23,9 @@ dayjs.extend(weekYear)
 dayjs.locale('pt-br')
 
 const lato = Lato({
-  weight: ['100','300', "400", '700'],
+  weight: ['100', '300', "400", '700'],
   subsets: ['latin']
- });
+});
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -45,13 +46,15 @@ export default function RootLayout({
 
   return (
     <QueryClientProvider client={queryClient}>
-        <html lang="en">
-          <body suppressHydrationWarning={true} className={lato.className}>
-                  <AntdRegistry>
-                    {children}
-                  </AntdRegistry>
-          </body>
-        </html>
+      <html lang="en">
+        <body suppressHydrationWarning={true} className={lato.className}>
+          <AntdRegistry>
+            <UserProvider>
+              {children}
+            </UserProvider>
+          </AntdRegistry>
+        </body>
+      </html>
     </QueryClientProvider>
   );
 }

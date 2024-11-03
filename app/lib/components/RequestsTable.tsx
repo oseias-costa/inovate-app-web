@@ -6,8 +6,8 @@ import { Document } from "../types/document.type";
 import DocumentDetails from "@/app/portal/documentos/utils/DocumentDetails";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
-import useGetUser from "../hooks/useGetUser";
 import { httpClient } from "../utils/httpClient";
+import { useUser } from "./UserProvider";
 
 interface DataType {
   key: string;
@@ -31,14 +31,14 @@ const RequestsTable = ({ filter, setFilter, status }: TableDocumentsProps) => {
   const [documentId, setDocumentId] = useState("");
   const queryClient = useQueryClient();
   const router = useRouter();
-  const { user } = useGetUser();
   const [pagination, setPagination] = useState({ page: "1", limit: "6" });
+  const { user } = useUser()
 
-  useEffect(() => {
-    if (user?.type === "COMPANY") {
-      setFilter({ ...filter, company: user.id });
-    }
-  }, [user]);
+  // useEffect(() => {
+  //   if (user?.type === "COMPANY") {
+  //     setFilter({ ...filter, company: user.id });
+  //   }
+  // }, [user]);
 
   const columns: TableProps<DataType>["columns"] = [
     {
@@ -116,7 +116,7 @@ const RequestsTable = ({ filter, setFilter, status }: TableDocumentsProps) => {
         page: pagination.page,
         limit: pagination.limit,
         filter: filter.company,
-        companyUuid: 'fd57b31d-8db4-11ef-aa1b-01092cc04206',
+        companyUuid: user?.uuid,
         status
       }
     })

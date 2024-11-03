@@ -92,7 +92,7 @@ export default function Login({ searchParams }: LoginPageProps) {
             ? <PulseLoader color="#fff" size={6} loading={true} />
             : 'Entrar'}
         </Button>
-        <Button type="link" onClick={() => router.push('/entrar/selecione')}>Voltar</Button>
+        <Button type="link" onClick={() => router.push('/entrar/first-acess')}>Primeiro acesso</Button>
       </div>
     </section>
   );

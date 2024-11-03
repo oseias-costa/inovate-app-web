@@ -73,7 +73,8 @@ export default function Menu({
         defaultSelectedKeys={["1"]}
         defaultOpenKeys={["sub1"]}
         mode="inline"
-        items={user?.type === 'ADMIN' ? [...items, ...admin] : items}
+        items={true ? [...items, ...admin] : items}
+      // items={user?.type === 'ADMIN' ? [...items, ...admin] : items}
       />
     </MenuContainer>
   );

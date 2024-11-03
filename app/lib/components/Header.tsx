@@ -1,9 +1,12 @@
 import Image from "next/image";
 import Logo from "@/public/auth/logo-clean.png";
 import styled from "styled-components";
-import { Avatar } from "antd";
-import { MenuOutlined, UserOutlined } from "@ant-design/icons";
+import { Avatar, Button } from "antd";
+import { BellOutlined, MenuOutlined, UserOutlined } from "@ant-design/icons";
 import { Dispatch, SetStateAction } from "react";
+import Notifications from "./Notifications";
+import { queryClient } from "../config/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function Header({
   open,
@@ -12,11 +15,24 @@ export default function Header({
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
 }) {
+  const queryClient = useQueryClient()
+
   return (
     <Container>
       <MenuIcon onClick={() => setOpen(!open)} />
       <LogoStyle src={Logo} alt="" />
-      <Avatar icon={<UserOutlined />} />
+      <div>
+        <Avatar icon={<UserOutlined />} />
+        <Notifications
+          button={
+            <Button
+              type="link"
+              onClick={() => queryClient.invalidateQueries({ queryKey: ['notifications'] })}
+            >
+              <BellOutlined style={{ fontSize: 24 }} />
+            </Button>}
+        />
+      </div>
     </Container>
   );
 }
@@ -29,6 +45,7 @@ const Container = styled.header`
   width: 100vw;
   padding-left: 50px;
   padding-right: 50px;
+  height: 60px;
 
   @media (max-width: 840px) {
     padding-right: 20px;
@@ -39,7 +56,6 @@ const Container = styled.header`
 const LogoStyle = styled(Image)`
   height: 50px;
   width: auto;
-  margin-top: auto;
 
   @media (max-width: 840px) {
     margin-right: 0 auto;
@@ -53,3 +69,8 @@ const MenuIcon = styled(MenuOutlined)`
   }
 
 `;
+
+const Notification = styled(Button)`
+  height: 50px;
+  width: 50px;
+`

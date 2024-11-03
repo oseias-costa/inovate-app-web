@@ -2,6 +2,8 @@ import { useQuery } from "@tanstack/react-query"
 import axios from "axios"
 import { redirect, useParams } from "next/navigation"
 import React, { useEffect } from "react"
+import { useUser } from "./UserProvider"
+import { httpClient } from "../utils/httpClient"
 
 export type UserProps = {
   createAt: string,
@@ -17,33 +19,61 @@ export type UserProps = {
 
 export default function isAuth(Component: any) {
   return function IsAuth(props: any) {
+    const { user, setUser } = useUser()
     const url = window.location.href
     const token = localStorage?.getItem('token')
+
     useEffect(() => {
       if (!token) {
         return redirect(`/entrar/login?redirectUri=${url}`)
       }
     }, [token])
 
-    const getUser = async () => {
-      const user = await axios({
-        method: 'GET',
-        baseURL: `http://localhost:3009/users/${localStorage.getItem('token')}`,
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      })
-
-      return user.data
-    }
-
-    const { data, isError, error } = useQuery<UserProps>({
+    const { data, isError, error, isSuccess, refetch, isFetched } = useQuery<User>({
       queryKey: ['user'],
-      queryFn: getUser
-    })
+      queryFn: async () => {
+        const token = `Bearer ${localStorage.getItem("token")}`
+        return httpClient({
+          method: 'GET',
+          path: `/users/get-user/${token}`,
+        });
+      },
+      enabled: false,
+    });
 
-    if (isError) {
-      localStorage.removeItem('token')
-      return redirect(`/entrar/login?redirectUri=${url}`)
-    }
+    useEffect(() => {
+      const handleEffect = () => {
+        if (user) return
+
+        if (isSuccess) {
+          setUser(data);
+        }
+
+        if (!user) {
+          refetch();
+        }
+        if (isFetched && !data) {
+          return router.push('/entrar/login');
+        }
+
+        if (isError) {
+          console.log('aqui deveria entrarrrrr');
+          const getError = error as AxiosError;
+          if (getError.response?.status === 401) {
+            setUser(null);
+            localStorage.removeItem('token');
+            return redirect(`/entrar/login?redirectUri=${url}`);
+          }
+        }
+      }
+
+      handleEffect();
+    }, [data, error, user]);
+
+    // if (isError) {
+    //   localStorage.removeItem('token')
+    //   return redirect(`/entrar/login?redirectUri=${url}`)
+    // }
 
     return <Component {...props} />
   }

@@ -6,6 +6,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import DrawerCompany from './DrawerUser';
 import { Company } from '@/app/lib/types/company.type';
+import { httpClient } from '@/app/lib/utils/httpClient';
 
 interface CompanyTableType {
   id: string;
@@ -16,19 +17,16 @@ interface CompanyTableType {
 
 const TableActiveUser: React.FC = () => {
 
-  const getCompanysByStatus = async () => {
-    const data = await axios({
-      method: 'get',
-      baseURL: 'http://localhost:3009/users/ACTIVE',
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-    })
-    return data.data
-  }
+
 
   const { data } = useQuery<Company[]>({
     queryKey: ['users-active'],
-    queryFn: getCompanysByStatus
+    queryFn: async () => httpClient({
+      path: '/users/get-users',
+      method: 'GET'
+    })
   })
+
   const [openDocumentDetais, setOpenDocumentDetais] = useState(false)
   const queryClient = useQueryClient()
   const router = useRouter()

@@ -2,14 +2,13 @@ import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Button, Space, Table, Tag } from "antd";
 import type { TableProps } from "antd";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Document } from "../types/document.type";
 import DocumentDetails from "@/app/portal/documentos/utils/DocumentDetails";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
-import useGetUser from "../hooks/useGetUser";
 import { httpClient } from "../utils/httpClient";
 import { Notice } from "../types/notice.type";
 import { Report } from "../types/report.type";
+import { useUser } from "./UserProvider";
 
 interface DataType {
   uuid: string
@@ -32,14 +31,14 @@ const ReportTable = ({ filter, setFilter, status }: TableDocumentsProps) => {
   const [documentId, setDocumentId] = useState("");
   const queryClient = useQueryClient();
   const router = useRouter();
-  const { user } = useGetUser();
   const [pagination, setPagination] = useState({ page: "1", limit: "6" });
+  const { user } = useUser()
 
-  useEffect(() => {
-    if (user?.type === "COMPANY") {
-      setFilter({ ...filter, company: user.id });
-    }
-  }, [user]);
+  // useEffect(() => {
+  //   if (user?.type === "COMPANY") {
+  //     setFilter({ ...filter, company: user.id });
+  //   }
+  // }, [user]);
 
   const columns: TableProps<DataType>["columns"] = [
     {
@@ -91,7 +90,7 @@ const ReportTable = ({ filter, setFilter, status }: TableDocumentsProps) => {
       queryString: {
         page: pagination.page,
         limit: pagination.limit,
-        companyUuid: '93ef1356-761d-11ef-84ca-047c62762b75',
+        companyUuid: user?.uuid,
       }
     })
   });

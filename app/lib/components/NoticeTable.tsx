@@ -2,13 +2,13 @@ import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Button, Space, Table, Tag } from "antd";
 import type { TableProps } from "antd";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Document } from "../types/document.type";
 import DocumentDetails from "@/app/portal/documentos/utils/DocumentDetails";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
-import useGetUser from "../hooks/useGetUser";
 import { httpClient } from "../utils/httpClient";
 import { Notice } from "../types/notice.type";
+import { useUser } from "./UserProvider";
+import { Pagination } from "../types/pagination.type";
 
 interface DataType {
   uuid: string
@@ -31,8 +31,8 @@ const NoticeTable = ({ filter, setFilter, status }: TableDocumentsProps) => {
   const [documentId, setDocumentId] = useState("");
   const queryClient = useQueryClient();
   const router = useRouter();
-  const { user } = useGetUser();
   const [pagination, setPagination] = useState({ page: "1", limit: "6" });
+  const { user } = useUser()
 
   useEffect(() => {
     if (user?.type === "COMPANY") {
@@ -82,7 +82,7 @@ const NoticeTable = ({ filter, setFilter, status }: TableDocumentsProps) => {
     },
   ];
 
-  const { data: docs, isLoading } = useQuery<Notices>({
+  const { data: docs, isLoading } = useQuery<Pagination<Notice>>({
     queryKey: [`notice-page`, pagination.page],
     queryFn: async () => httpClient({
       path: '/notice',
@@ -90,21 +90,10 @@ const NoticeTable = ({ filter, setFilter, status }: TableDocumentsProps) => {
       queryString: {
         page: pagination.page,
         limit: pagination.limit,
-        uuid: 'fd57b31d-8db4-11ef-aa1b-01092cc04206',
+        uuid: user?.uuid,
       }
     })
   });
-
-  type Notices = {
-    items: Notice[];
-    meta: {
-      totalItems: number;
-      itemCount: number;
-      itemsPerPage: number;
-      totalPages: number;
-      currentPage: number;
-    };
-  };
 
   let options: DataType[] = [];
   const convertData = docs?.items?.map((item: any) => {

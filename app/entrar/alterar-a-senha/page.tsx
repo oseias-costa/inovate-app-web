@@ -2,21 +2,20 @@
 import Image from "next/image";
 import { useState } from "react";
 import Logo from '@/public/auth/logo-clean.png'
-import { redirect, useRouter, useSearchParams } from "next/navigation";
+import { redirect, useSearchParams } from "next/navigation";
 import { Button, Input as InputAnt, Typography } from 'antd';
 import Title from "antd/es/typography/Title";
-import useSession from "@/app/lib/hooks/useSession";
 import { useIsMutating, useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import PulseLoader from "react-spinners/PulseLoader";
+import { useUser } from "@/app/lib/components/UserProvider";
 
 export default function ChangePassword() {
   const [data, setData] = useState({ password: '', passwordConfirmation: '' })
   const [showPassword, setShowPassword] = useState(false);
-  const router = useRouter()
   const [error, setError] = useState('')
   const params = useSearchParams()
-  const { user } = useSession()
+  const { user } = useUser()
   const token = localStorage.getItem('update-password')
 
   if (user) {
@@ -49,9 +48,8 @@ export default function ChangePassword() {
     mutationFn: updatePassword,
     mutationKey: ['update-password'],
     onSuccess: () => {
-
       localStorage.removeItem('update-password')
-      return router.replace('/entrar/login')
+      redirect('/entrar/login')
     },
     onError: () => {
       setError('O código é inválido')
