@@ -10,6 +10,7 @@ import {
   Row,
   Tag,
   message,
+  notification
 } from "antd";
 import locale from "antd/locale/pt_BR";
 import dayjs from "dayjs";
@@ -27,23 +28,28 @@ import { useQuery } from "@tanstack/react-query";
 import { httpClient } from "@/app/lib/utils/httpClient";
 import { useState } from "react";
 import EditRequest from "@/app/lib/components/EditRequest";
+import { File } from '@/app/lib/types/upload.type'
+import { DownloadOutlined } from '@ant-design/icons';
+import axios from 'axios'
+
+type NotificationType = 'success' | 'info' | 'warning' | 'error';
 
 const Request = () => {
   const params = useParams();
   const id = params.id as string;
   const [openDrawer, setOpenDrawer] = useState(false)
+  const [file, setFile] = useState<File | undefined>()
+  const [loadingDownload, setLoadingDownload] = useState({ key: '', loading: false })
 
-  const items = [
-    {
-      title: "Aberta",
-    },
-    {
-      title: "Aguardando",
-    },
-    {
-      title: "Finalizada",
-    },
-  ];
+  const [api, contextHolder] = notification.useNotification();
+
+  const openNotificationWithIcon = (type: NotificationType) => {
+    api[type]({
+      message: 'Documento enviado com sucesso',
+      description:
+        'Solicitação foi concluída',
+    });
+  };
 
   const { data, isLoading } = useQuery({
     queryKey: [`request-${id}`],
@@ -52,6 +58,32 @@ const Request = () => {
       method: 'GET'
     })
   })
+
+  const downloadFile = async (key: string, name: string) => {
+    try {
+
+      const response = await axios.get(`http://localhost:3009/document/download?key=${key}`, {
+        responseType: 'blob',
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', name);
+
+      document.body.appendChild(link);
+      link.click();
+
+      link.remove();
+      window.URL.revokeObjectURL(url);
+
+    } catch (error) {
+      setLoadingDownload({ key, loading: false })
+      console.error('Error downloading file:', error);
+    }
+    setLoadingDownload({ key, loading: false })
+  };
 
   const date = dayjs(data?.expiration);
 
@@ -76,6 +108,7 @@ const Request = () => {
 
   return (
     <Form layout="vertical" hideRequiredMark>
+      {contextHolder}
       <EditRequest
         open={openDrawer}
         setOpen={setOpenDrawer}
@@ -113,15 +146,6 @@ const Request = () => {
         </Button>
 
       </div>
-      {/* <Steps
-        size="small"
-        direction="horizontal"
-        status="process"
-        style={{ padding: "0", marginBottom: 40, paddingTop: 20 }}
-        current={1}
-        labelPlacement="vertical"
-        items={items}
-      /> */}
       <Row gutter={16}>
         <Col span={12}>
           <Form.Item
@@ -187,58 +211,84 @@ const Request = () => {
         </Col>
       </Row>
       <Row>
-        <Col span={12}>
-          <Form.Item
-            name="description"
-            label="Upload"
-            rules={[{ required: true, message: "Coloque seu Sobrenome" }]}
-            initialValue={data?.document}
+        <Form.Item
+          name="upload-document"
+          label="Enviar documento"
+          initialValue={data?.document}
+        >
+          <Dragger
+            name="file"
+            action={`http://localhost:3009/document/upload/${id}?name=${file?.name}&mimeType=${file?.type}&type=REQUEST`}
+            headers={{
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            }}
+            beforeUpload={(file) => {
+              const uploadFile = file as unknown as File
+              setFile(uploadFile)
+            }}
+            isImageUrl={(file) => data?.url !== ""}
+            showUploadList={{
+              showDownloadIcon: true,
+              showRemoveIcon: true,
+              removeIcon: (
+                <StarOutlined
+                  onClick={(e) => console.log(e, "custom removeIcon event")}
+                />
+              ),
+            }}
+            onChange={(info) => {
+              if (info.file.status !== "uploading") {
+                console.log(info.file, info.fileList);
+              }
+              if (info.file.status === "done") {
+                openNotificationWithIcon('success')
+
+              } else if (info.file.status === "error") {
+                message.error(`Ocorreu um erro ao enviar o documento ${info.file.name}.`);
+              }
+            }}
+            style={{ width: '100%' }}
           >
-            <Dragger
-              name="file"
-              action={`http://localhost:3009/document/upload/${data?.id}`}
-              headers={{
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
-              }}
-              isImageUrl={(file) => data?.url !== ""}
-              showUploadList={{
-                showDownloadIcon: true,
-                showRemoveIcon: true,
-                removeIcon: (
-                  <StarOutlined
-                    onClick={(e) => console.log(e, "custom removeIcon event")}
-                  />
-                ),
-              }}
-              onChange={(info) => {
-                if (info.file.status !== "uploading") {
-                  console.log(info.file, info.fileList);
-                }
-                if (info.file.status === "done") {
-                  message.success(
-                    `${info.file.name} documento enviado com sucesso`
-                  );
-                } else if (info.file.status === "error") {
-                  message.error(`Ocorreu um erro ao enviar o documento ${info.file.name}.`);
-                }
-              }}
-            >
-              <p className="ant-upload-drag-icon">
-                <InboxOutlined />
-              </p>
-              <p className="ant-upload-text">
-                Clique aqui ou arraste o documento para fazer o envio
-              </p>
-              <p className="ant-upload-hint">
-                Selecione o documento solicitado, os formatos aceitos são pdf e
-                word e excel.
-              </p>
-            </Dragger>
-          </Form.Item>
-        </Col>
-        <Col span={12}></Col>
+            <p className="ant-upload-drag-icon">
+              <InboxOutlined />
+            </p>
+            <p className="ant-upload-text">
+              Clique aqui ou arraste o documento para fazer o envio
+            </p>
+            <p className="ant-upload-hint">
+              Selecione o documento solicitado, os formatos aceitos são pdf e
+              word e excel.
+            </p>
+          </Dragger>
+        </Form.Item>
       </Row>
-    </Form>
+      {data.documents ? (
+        <Row>
+          <Form.Item
+            name="download-buttons"
+            label="Documentos :"
+          >
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              {data.documents && data.documents?.map((document) => (
+                <Button
+                  style={{ marginTop: 3 }}
+                  type="primary"
+                  icon={<DownloadOutlined />}
+                  size="large"
+                  loading={document.path === loadingDownload.key && loadingDownload.loading}
+                  onClick={() => {
+                    setLoadingDownload({ key: document.path, loading: true })
+                    downloadFile(document.path, document.name)
+                  }}
+                >
+                  {document.name}
+                </Button>
+              ))}
+            </div>
+          </Form.Item>
+        </Row>
+      ) : null}
+    </Form >
   );
 };
 

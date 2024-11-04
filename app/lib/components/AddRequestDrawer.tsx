@@ -1,5 +1,5 @@
 "use client";
-import React, { SetStateAction, useEffect, useState } from "react";
+import React, { SetStateAction, useState } from "react";
 import {
   Button,
   Col,
@@ -17,7 +17,6 @@ import TextArea from "antd/es/input/TextArea";
 import locale from "antd/locale/pt_BR";
 import "dayjs/locale/pt-br";
 import SelectCompany from "./SelectCompany";
-import useGetUser from "../hooks/useGetUser";
 import axios, { AxiosError } from "axios";
 import {
   useIsMutating,
@@ -25,6 +24,8 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import PulseLoader from "react-spinners/PulseLoader";
+import { useUser } from "./UserProvider";
+import { httpClient } from "../utils/httpClient";
 
 type DrawerComponentProps = {
   open: boolean;
@@ -35,53 +36,40 @@ export default function DrawerComponent({
   open,
   setOpen,
 }: DrawerComponentProps) {
-  const [companys, setCompanys] = useState("");
+  const { user } = useUser()
+  const [company, setCompany] = useState<string | string[]>("");
   const queryClient = useQueryClient();
-  console.log("companys", companys);
   const [request, setRequest] = useState({
-    requesterId: "",
-    companyId: companys,
     document: "",
     description: "",
-    realmId: "",
     expiration: "",
   });
-  console.log(request)
-  const { user } = useGetUser();
+
   const onChange: DatePickerProps["onChange"] = (date, dateString) => {
     const d = new Date(date.toDate());
     setRequest({ ...request, expiration: d.toISOString() });
   };
 
-  useEffect(() => {
-    setRequest({
-      ...request,
-      companyId: companys,
-      realmId: user ? user.reamlID : "",
-      requesterId: user ? user.id : "",
-    });
-  }, [user, companys]);
-
   const onClose = () => {
     setOpen(false);
   };
 
-  const postCreateDoc = async () => {
-    const response = await axios({
-      baseURL: "http://localhost:3009/document/create-request",
-      method: "POST",
-      data: { ...request },
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    });
-    return response.data;
-  };
-
-  const isMutation = useIsMutating({ mutationKey: ["documents"], exact: true });
+  const isMutation = useIsMutating({ mutationKey: ["create-request"], exact: true });
 
   const mutation = useMutation({
-    mutationFn: postCreateDoc,
+    mutationKey: ['create-request'],
+    mutationFn: async () => httpClient({
+      method: 'POST',
+      path: '/requests',
+      data: {
+        requesterUuid: user?.uuid,
+        companyUuid: company,
+        ...request
+      }
+    }),
     onSuccess: () => {
       onClose();
+      message.success(`Solicitação criada com sucesso!`)
       return queryClient.invalidateQueries({ queryKey: ["documents"] });
     },
     onError: (error: AxiosError | any) => {
@@ -90,7 +78,6 @@ export default function DrawerComponent({
       }
     }
   });
-  console.log('user', user)
 
   if (!user) {
     return (<p>Loading</p>)
@@ -124,7 +111,7 @@ export default function DrawerComponent({
               label="Empresa"
               rules={[{ required: true, message: "Coloque seu Nome" }]}
             >
-              <SelectCompany setCompanys={setCompanys} />
+              <SelectCompany setCompanys={setCompany} companys={company} />
             </Form.Item>
           </Col>
           <Col span={12}>
