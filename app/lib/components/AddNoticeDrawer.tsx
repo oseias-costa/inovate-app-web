@@ -8,6 +8,7 @@ import {
   Select,
   Space,
   message,
+  Steps
 } from "antd";
 import "dayjs/locale/pt-br";
 import SelectCompany from "./SelectCompany";
@@ -22,6 +23,9 @@ import Tiptap from "./Tiptap";
 import { httpClient } from "../utils/httpClient";
 import Tynymce from "./Tynymce";
 import SelectUsers from "./SelectUsers";
+import { File } from '@/app/lib/types/upload.type'
+import Dragger from "antd/es/upload/Dragger";
+import { InboxOutlined, PlusOutlined, StarOutlined } from "@ant-design/icons";
 
 type DrawerComponentProps = {
   open: boolean;
@@ -37,6 +41,10 @@ export default function AddNoticeDrawer({
   const [text, setText] = useState('')
   const [type, setType] = useState('')
   const queryClient = useQueryClient();
+  const [current, setCurrent] = useState(0);
+  const [file, setFile] = useState<File | undefined>()
+  const [id, setId] = useState()
+  const [noticeUuids, setNoticeUuids] = useState([])
 
   const users = typeof companys !== 'string' && companys.map((user) => ({ name: '', uuid: user }))
 
@@ -64,6 +72,15 @@ export default function AddNoticeDrawer({
 
   const isMutation = useIsMutating({ mutationKey: ["create-notice"], exact: true });
 
+  const handleNextStep = () => {
+    if (current === 0) {
+      createNotice.mutate()
+      return setCurrent(1)
+    }
+
+    setOpen(false)
+  }
+
   return (
     <Drawer
       title="Criar aviso"
@@ -74,17 +91,25 @@ export default function AddNoticeDrawer({
       extra={
         <Space>
           <Button onClick={() => setOpen(false)}>Cancelar</Button>
-          <Button onClick={() => createNotice.mutate()} type="primary">
+          <Button onClick={handleNextStep} type="primary">
             {isMutation ? (
               <PulseLoader color="#fff" size={6} loading={true} />
             ) : (
-              "Criar"
+              "Próximo"
             )}
           </Button>
         </Space>
       }
     >
       <Form layout="vertical" hideRequiredMark>
+        <Steps
+          current={current}
+          items={[
+            { title: 'Preencha o aviso' },
+            { title: 'Faça o upload' }
+          ]}
+          style={{ marginBottom: 40 }}
+        />
         <Form.Item
           name="type"
           label="Escolha para quem deseja enviar"
@@ -101,7 +126,7 @@ export default function AddNoticeDrawer({
               { value: 'ALL_USERS', label: 'Todos os colaboradores', },
             ]}
           />
-        </Form.Item>
+        </Form.Item>
         {type === "SELECTED_COMPANYS" ? (
           <Form.Item
             name="name"
@@ -145,6 +170,56 @@ export default function AddNoticeDrawer({
           rules={[{ required: true, message: "Preencha o aviso" }]}
         >
           <Tiptap setText={setText} />
+        </Form.Item>
+        <Form.Item
+          name="upload-document"
+          label="Anexar um documento"
+        >
+          <Dragger
+            disabled={current === 0}
+            name="file"
+            action={`http://localhost:3009/document/upload/${id}?name=${file?.name}&mimeType=${file?.type}&type=NOTICE`}
+            headers={{
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            }}
+            beforeUpload={(file) => {
+              const uploadFile = file as unknown as File
+              setFile(uploadFile)
+            }}
+            showUploadList={{
+              showDownloadIcon: true,
+              showRemoveIcon: true,
+              removeIcon: (
+                <StarOutlined
+                  onClick={(e) => console.log(e, "custom removeIcon event")}
+                />
+              ),
+            }}
+            onChange={(info) => {
+              if (info.file.status !== "uploading") {
+                console.log(info.file, info.fileList);
+              }
+              if (info.file.status === "done") {
+                message.success(`Ocorreu um erro ao enviar o documento ${info.file.name}.`);
+
+
+              } else if (info.file.status === "error") {
+                message.error(`Ocorreu um erro ao enviar o documento ${info.file.name}.`);
+              }
+            }}
+            style={{ width: '100%' }}
+          >
+            <p className="ant-upload-drag-icon">
+              <InboxOutlined />
+            </p>
+            <p className="ant-upload-text">
+              Clique aqui ou arraste o documento para fazer o envio
+            </p>
+            <p className="ant-upload-hint">
+              Selecione o documento solicitado, os formatos aceitos são pdf e
+              word e excel.
+            </p>
+          </Dragger>
         </Form.Item>
       </Form>
     </Drawer>

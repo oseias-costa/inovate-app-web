@@ -107,7 +107,7 @@ const Request = () => {
   }
 
   return (
-    <Form layout="vertical" hideRequiredMark>
+    <Form layout="vertical" hideRequiredMark style={{ width: 900 }}>
       {contextHolder}
       <EditRequest
         open={openDrawer}
@@ -128,7 +128,7 @@ const Request = () => {
         style={{ paddingBottom: 10 }}
       />
       <div style={{ display: 'flex' }}>
-        <div>
+        <div style={{ display: 'flex' }}>
           <h2 style={{ fontWeight: 400, paddingBottom: 25, color: "#404040" }}>
             Detalhes da Solicitação
           </h2>
@@ -138,11 +138,10 @@ const Request = () => {
         </div>
 
         <Button
-          type="primary"
-          style={{ marginLeft: "auto", marginRight: "20px" }}
+          style={{ marginLeft: "auto" }}
           onClick={() => setOpenDrawer(true)}
         >
-          <PlusOutlined /> Editar solicitação
+          Editar
         </Button>
 
       </div>
@@ -188,14 +187,16 @@ const Request = () => {
           <p style={{ height: "22px", marginBottom: "8px" }}>Prazo</p>
           <ConfigProvider locale={locale}>
             <DatePicker
+              disabled
               defaultValue={date}
               contentEditable={false}
               format="DD-MM-YYYY"
-              style={{ width: "100%" }}
+              color="red"
+              style={{ width: "100%", backgroundColor: '#fff', color: "#000" }}
             />
           </ConfigProvider>
         </Col>
-        <Col span={12}>
+        <Col span={24}>
           <Form.Item
             name="lastName"
             label="Descrição"
@@ -205,7 +206,7 @@ const Request = () => {
             <TextArea
               // onChange={(e) => setRequest({...request, description: e.target.value})}
               placeholder="Escreva uma descrição"
-              autoSize={{ minRows: 2, maxRows: 6 }}
+              autoSize={{ minRows: 2, maxRows: 6, width: '100%' }}
             />
           </Form.Item>
         </Col>
@@ -215,6 +216,7 @@ const Request = () => {
           name="upload-document"
           label="Enviar documento"
           initialValue={data?.document}
+          style={{ width: '100%' }}
         >
           <Dragger
             name="file"

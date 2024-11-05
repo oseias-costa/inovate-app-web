@@ -45,7 +45,7 @@ const Container = styled.header`
   width: 100vw;
   padding-left: 50px;
   padding-right: 50px;
-  height: 60px;
+  height: 64px;
 
   @media (max-width: 840px) {
     padding-right: 20px;

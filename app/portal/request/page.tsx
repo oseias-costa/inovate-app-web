@@ -59,26 +59,11 @@ const Documents = () => {
         ]}
         style={{ paddingBottom: 10 }}
       />
-      <h2 style={{ fontWeight: 400, paddingBottom: 25, color: "#404040" }}>
-        Solicitações de documentos
-      </h2>
+
       <div style={{ paddingBottom: 10, display: "flex", flexWrap: "wrap" }}>
-        <Select
-          defaultValue="lucy"
-          onChange={handleChange}
-          options={[
-            { value: "jack", label: "Leonardo" },
-            { value: "lucy", label: "Cássio" },
-            { value: "Yiminghe", label: "Rafael" },
-            { value: "disabled", label: "Katherine", disabled: true },
-          ]}
-        />
-        <Button type="primary" disabled style={{ marginLeft: 10 }}>
-          Filtrar
-        </Button>
-        <Button type="default" style={{ marginLeft: 5 }}>
-          Limpar
-        </Button>
+        <h2 style={{ fontWeight: 400, paddingBottom: 15, color: "#404040" }}>
+          Solicitações de documentos
+        </h2>
         <Button
           type="primary"
           style={{ marginLeft: "auto", marginRight: "20px" }}

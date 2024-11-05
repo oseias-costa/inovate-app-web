@@ -67,13 +67,13 @@ const RequestsTable = ({ filter, setFilter, status }: TableDocumentsProps) => {
       render: (status) => {
         let color;
         switch (status) {
-          case "EXPIRED":
+          case "Vencido":
             color = "volcano";
             break;
-          case "PEDING":
+          case "Pendente":
             color = "geekblue";
             break;
-          case "FINISH":
+          case "Concluído":
             color = "green";
             break;
         }
