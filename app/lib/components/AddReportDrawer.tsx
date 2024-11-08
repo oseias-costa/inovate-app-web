@@ -6,6 +6,7 @@ import {
   Form,
   Input,
   Space,
+  Steps,
   message,
 } from "antd";
 import "dayjs/locale/pt-br";
@@ -19,6 +20,9 @@ import {
 import PulseLoader from "react-spinners/PulseLoader";
 import Tiptap from "./Tiptap";
 import { httpClient } from "../utils/httpClient";
+import { InboxOutlined, StarOutlined } from "@ant-design/icons";
+import Dragger from "antd/es/upload/Dragger";
+import { useUser } from "./UserProvider";
 
 type DrawerComponentProps = {
   open: boolean;
@@ -33,6 +37,10 @@ export default function AddReportDrawer({
   const [title, setTitle] = useState('')
   const [text, setText] = useState('')
   const queryClient = useQueryClient();
+  const [file, setFile] = useState<File | undefined>()
+  const [current, setCurrent] = useState(0);
+  const [id, setId] = useState()
+  const { user } = useUser()
 
   const createNotice = useMutation({
     mutationKey: ['create-notice'],
@@ -43,14 +51,12 @@ export default function AddReportDrawer({
         title,
         text,
         companyUuid: companys,
-        authorUuid: 'be0f7f95-7545-11ef-84ca-047c62762b75'
+        authorUuid: user?.uuid
       }
     }),
-    onSuccess: () => {
-      setOpen(false)
-      setTitle('')
-      setText('')
-      setCompanys([])
+    onSuccess: (data) => {
+      setId(data)
+      setCurrent(1)
       return queryClient.invalidateQueries({ queryKey: ["notice-page"] });
     },
     onError: (error: AxiosError | any) => {
@@ -62,6 +68,17 @@ export default function AddReportDrawer({
 
   const isMutation = useIsMutating({ mutationKey: ["create-notice"], exact: true });
 
+  const handleNext = () => {
+    if (current === 0) {
+      return createNotice.mutate()
+    }
+
+    setTitle('')
+    setText('')
+    setCompanys('')
+  }
+
+
   return (
     <Drawer
       title="Novo relatório"
@@ -72,17 +89,25 @@ export default function AddReportDrawer({
       extra={
         <Space>
           <Button onClick={() => setOpen(false)}>Cancelar</Button>
-          <Button onClick={() => createNotice.mutate()} type="primary">
+          <Button onClick={handleNext} type="primary">
             {isMutation ? (
               <PulseLoader color="#fff" size={6} loading={true} />
             ) : (
-              "Criar"
+              current === 0 ? "Próximo" : "Finalizar"
             )}
           </Button>
         </Space>
       }
     >
       <Form layout="vertical" hideRequiredMark>
+        <Steps
+          current={current}
+          items={[
+            { title: 'Preencha o aviso' },
+            { title: 'Faça o upload' }
+          ]}
+          style={{ marginBottom: 40 }}
+        />
         <Form.Item
           name="name"
           label="Empresa"
@@ -99,6 +124,7 @@ export default function AddReportDrawer({
           rules={[{ required: true, message: "Coloque um título" }]}
         >
           <Input
+            disabled={current !== 0}
             placeholder="Coloque um título"
             style={{ width: '100%' }}
             onChange={(e) => setTitle(e.target.value)} value={title}
@@ -110,6 +136,56 @@ export default function AddReportDrawer({
           rules={[{ required: true, message: "Preencha uma descrição" }]}
         >
           <Tiptap setText={setText} />
+        </Form.Item>
+        <Form.Item
+          name="upload-document"
+          label="Anexar um documento"
+        >
+          <Dragger
+            disabled={current === 0}
+            name="file"
+            action={`http://localhost:3009/document/upload/${id}?name=${file?.name}&mimeType=${file?.type}&type=REPORT`}
+            headers={{
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            }}
+            beforeUpload={(file) => {
+              const uploadFile = file as unknown as File
+              setFile(uploadFile)
+            }}
+            showUploadList={{
+              showDownloadIcon: true,
+              showRemoveIcon: true,
+              removeIcon: (
+                <StarOutlined
+                  onClick={(e) => console.log(e, "custom removeIcon event")}
+                />
+              ),
+            }}
+            onChange={(info) => {
+              if (info.file.status !== "uploading") {
+                console.log(info.file, info.fileList);
+              }
+              if (info.file.status === "done") {
+                message.success(`Ocorreu um erro ao enviar o documento ${info.file.name}.`);
+
+
+              } else if (info.file.status === "error") {
+                message.error(`Ocorreu um erro ao enviar o documento ${info.file.name}.`);
+              }
+            }}
+            style={{ width: '100%' }}
+          >
+            <p className="ant-upload-drag-icon">
+              <InboxOutlined />
+            </p>
+            <p className="ant-upload-text">
+              Clique aqui ou arraste o documento para fazer o envio
+            </p>
+            <p className="ant-upload-hint">
+              Selecione o documento solicitado, os formatos aceitos são pdf e
+              word e excel.
+            </p>
+          </Dragger>
         </Form.Item>
       </Form>
     </Drawer>

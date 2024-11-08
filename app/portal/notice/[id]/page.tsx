@@ -62,7 +62,7 @@ const NoticeDetail = () => {
   }
 
   return (
-    <Form layout="vertical" hideRequiredMark>
+    <Form layout="vertical" hideRequiredMark style={{ width: '900px' }}>
       <Breadcrumb
         items={[
           { title: <Link href="/portal/dashboard">Início</Link> },
@@ -75,7 +75,7 @@ const NoticeDetail = () => {
         ]}
         style={{ paddingBottom: 10 }}
       />
-      <div style={{ display: 'flex' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <h2 style={{ fontWeight: 400, paddingBottom: 25, color: "#404040" }}>
           {data.title}
         </h2>

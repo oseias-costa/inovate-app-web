@@ -82,7 +82,7 @@ const ReportTable = ({ filter, setFilter, status }: TableDocumentsProps) => {
     },
   ];
 
-  const { data, isLoading } = useQuery<Reports>({
+  const { data, isLoading, refetch } = useQuery<Reports>({
     queryKey: [`report-page`, pagination.page],
     queryFn: async () => httpClient({
       path: '/reports',
@@ -115,6 +115,10 @@ const ReportTable = ({ filter, setFilter, status }: TableDocumentsProps) => {
       createdAt: item.createdAt,
     });
   });
+
+  useEffect(() => {
+    refetch()
+  }, [])
 
   return (
     <>

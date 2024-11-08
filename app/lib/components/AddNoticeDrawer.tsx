@@ -126,7 +126,7 @@ export default function AddNoticeDrawer({
               { value: 'ALL_USERS', label: 'Todos os colaboradores', },
             ]}
           />
-        </Form.Item>
+        </Form.Item>
         {type === "SELECTED_COMPANYS" ? (
           <Form.Item
             name="name"

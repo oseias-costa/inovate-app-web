@@ -82,7 +82,7 @@ const NoticeTable = ({ filter, setFilter, status }: TableDocumentsProps) => {
     },
   ];
 
-  const { data: docs, isLoading } = useQuery<Pagination<Notice>>({
+  const { data: docs, isLoading, refetch } = useQuery<Pagination<Notice>>({
     queryKey: [`notice-page`, pagination.page],
     queryFn: async () => httpClient({
       path: '/notice',
@@ -104,6 +104,10 @@ const NoticeTable = ({ filter, setFilter, status }: TableDocumentsProps) => {
       createdAt: item.createdAt,
     });
   });
+
+  useEffect(() => {
+    refetch()
+  }, [])
 
   return (
     <>

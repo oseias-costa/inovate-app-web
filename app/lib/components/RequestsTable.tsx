@@ -107,7 +107,7 @@ const RequestsTable = ({ filter, setFilter, status }: TableDocumentsProps) => {
     },
   ];
 
-  const { data: docs, isLoading } = useQuery<Documents>({
+  const { data: docs, isLoading, refetch } = useQuery<Documents>({
     queryKey: [`document-page`, pagination.page, status],
     queryFn: async () => httpClient({
       path: '/requests',
@@ -121,6 +121,10 @@ const RequestsTable = ({ filter, setFilter, status }: TableDocumentsProps) => {
       }
     })
   });
+
+  useEffect(() => {
+    refetch()
+  }, [])
 
   type Documents = {
     items: Document[];

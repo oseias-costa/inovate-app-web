@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import React, { Dispatch, SetStateAction } from "react";
 import {
   FileOutlined,
+  FolderAddOutlined,
   HomeOutlined,
   UserOutlined,
   UsergroupAddOutlined,
@@ -24,7 +25,7 @@ const items: MenuItem[] = [
       {
         key: "/portal/request",
         label: "Solicitações",
-        icon: <FileOutlined />,
+        icon: <FolderAddOutlined />,
       },
       {
         key: "/portal/notice",

@@ -32,22 +32,22 @@ const Documents = () => {
   const items: TabsProps["items"] = [
     {
       key: "1",
-      label: "Todas",
+      label: "Todos",
       children: <NoticeTable filter={filter} setFilter={setFilter} status="" />,
     },
     {
       key: "2",
-      label: "Pendentes",
+      label: "Gerais",
       children: <NoticeTable filter={filter} setFilter={setFilter} status="PENDING" />,
     },
     {
       key: "3",
-      label: "Vencidas",
+      label: "Financeiro",
       children: <NoticeTable filter={filter} setFilter={setFilter} status="DUE" />,
     },
     {
       key: "4",
-      label: "Concluídas",
+      label: "Prazos",
       children: <NoticeTable filter={filter} setFilter={setFilter} status="FINISH" />,
     },
   ]
@@ -61,26 +61,10 @@ const Documents = () => {
         ]}
         style={{ paddingBottom: 10 }}
       />
-      <h2 style={{ fontWeight: 400, paddingBottom: 25, color: "#404040" }}>
-        Avisos
-      </h2>
-      <div style={{ paddingBottom: 10, display: "flex", flexWrap: "wrap" }}>
-        <Select
-          defaultValue="lucy"
-          onChange={handleChange}
-          options={[
-            { value: "jack", label: "Leonardo" },
-            { value: "lucy", label: "Cássio" },
-            { value: "Yiminghe", label: "Rafael" },
-            { value: "disabled", label: "Katherine", disabled: true },
-          ]}
-        />
-        <Button type="primary" disabled style={{ marginLeft: 10 }}>
-          Filtrar
-        </Button>
-        <Button type="default" style={{ marginLeft: 5 }}>
-          Limpar
-        </Button>
+      <div style={{ display: 'flex' }}>
+        <h2 style={{ fontWeight: 400, paddingBottom: 25, color: "#404040" }}>
+          Avisos
+        </h2>
         <Button
           type="primary"
           style={{ marginLeft: "auto", marginRight: "20px" }}

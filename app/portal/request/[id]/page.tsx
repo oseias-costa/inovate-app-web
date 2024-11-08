@@ -206,7 +206,7 @@ const Request = () => {
             <TextArea
               // onChange={(e) => setRequest({...request, description: e.target.value})}
               placeholder="Escreva uma descrição"
-              autoSize={{ minRows: 2, maxRows: 6, width: '100%' }}
+              autoSize={{ minRows: 2, maxRows: 6 }}
             />
           </Form.Item>
         </Col>
@@ -274,7 +274,6 @@ const Request = () => {
               {data.documents && data.documents?.map((document) => (
                 <Button
                   style={{ marginTop: 3 }}
-                  type="primary"
                   icon={<DownloadOutlined />}
                   size="large"
                   loading={document.path === loadingDownload.key && loadingDownload.loading}

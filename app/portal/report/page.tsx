@@ -49,19 +49,22 @@ const Report = () => {
         ]}
         style={{ paddingBottom: 10 }}
       />
-      <h2 style={{ fontWeight: 400, paddingBottom: 25, color: "#404040" }}>
-        Relatórios
-      </h2>
-      <Button
-        type="primary"
-        style={{ marginLeft: "auto", marginRight: "20px" }}
-        onClick={() => setOpenDrawer(true)}
-      >
-        <PlusOutlined /> Novo relatório
-      </Button>
-      <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <h2 style={{ fontWeight: 400, paddingBottom: 25, color: "#404040" }}>
+          Relatórios
+        </h2>
+        <Button
+          type="primary"
+          style={{ marginLeft: "auto", marginRight: "20px" }}
+          onClick={() => setOpenDrawer(true)}
+        >
+          <PlusOutlined /> Novo relatório
+        </Button>
+      </div>
+      {/* <Tabs defaultActiveKey="1" items={items} onChange={onChange} /> */}
+      <ReportTable filter={filter} setFilter={setFilter} status="" />
       <AddReportDrawer open={openDrawer} setOpen={setOpenDrawer} />
-    </div>
+    </div >
   );
 };
 
