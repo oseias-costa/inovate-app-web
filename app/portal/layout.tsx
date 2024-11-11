@@ -1,18 +1,17 @@
-"use client";
-import styled from "styled-components";
-import Header from "../lib/components/Header";
-import Menu from "../lib/components/Menu";
-import useGetUser from "../lib/hooks/useGetUser";
-import { useObserveElementWidth } from "../lib/hooks/useObserveElementWidth";
-import { useState } from "react";
-import Spinner from "../lib/components/Spinner";
+'use client';
+import styled from 'styled-components';
+import Header from '../lib/components/Header';
+import Menu from '../lib/components/Menu';
+import { useState } from 'react';
+import Spinner from '../lib/components/Spinner';
+import { useUser } from '../lib/components/UserProvider';
 
 export default function Layout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { user } = useGetUser();
+  const { user } = useUser();
   const [openMenu, setOpenMenu] = useState(false);
 
   const closeMenu = () => {
@@ -26,9 +25,9 @@ export default function Layout({
   }
 
   return (
-    <div style={{ paddingLeft: "0px" }}>
+    <div style={{ paddingLeft: '0px' }}>
       <Header open={openMenu} setOpen={setOpenMenu} />
-      <div style={{ paddingTop: "2px", display: "flex" }}>
+      <div style={{ paddingTop: '2px', display: 'flex' }}>
         <Menu open={openMenu} setOpen={setOpenMenu} />
         <BodyContainer onClick={closeMenu}>{children}</BodyContainer>
       </div>

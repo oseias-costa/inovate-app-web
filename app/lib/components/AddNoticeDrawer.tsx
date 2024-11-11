@@ -1,223 +1,167 @@
-"use client";
-import React, { SetStateAction, useState } from "react";
-import {
-  Button,
-  Drawer,
-  Form,
-  Input,
-  Select,
-  Space,
-  message,
-  Steps
-} from "antd";
-import "dayjs/locale/pt-br";
-import SelectCompany from "./SelectCompany";
-import { AxiosError } from "axios";
-import {
-  useIsMutating,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
-import PulseLoader from "react-spinners/PulseLoader";
-import Tiptap from "./Tiptap";
-import { httpClient } from "../utils/httpClient";
-import Tynymce from "./Tynymce";
-import SelectUsers from "./SelectUsers";
-import { File } from '@/app/lib/types/upload.type'
-import Dragger from "antd/es/upload/Dragger";
-import { InboxOutlined, PlusOutlined, StarOutlined } from "@ant-design/icons";
+'use client';
+import React, { SetStateAction, useRef, useState } from 'react';
+import { Button, Drawer, Form, Input, Select, Space, message, Steps } from 'antd';
+import 'dayjs/locale/pt-br';
+import SelectCompany from './SelectCompany';
+import { AxiosError } from 'axios';
+import { useIsMutating, useMutation, useQueryClient } from '@tanstack/react-query';
+import PulseLoader from 'react-spinners/PulseLoader';
+import { httpClient } from '../utils/httpClient';
+import { File } from '@/app/lib/types/upload.type';
+import Dragger from 'antd/es/upload/Dragger';
+import { InboxOutlined, PlusOutlined, StarOutlined } from '@ant-design/icons';
+import JoditEditor from 'jodit-react';
 
 type DrawerComponentProps = {
   open: boolean;
   setOpen: React.Dispatch<SetStateAction<boolean>>;
 };
 
-export default function AddNoticeDrawer({
-  open,
-  setOpen,
-}: DrawerComponentProps) {
-  const [companys, setCompanys] = useState<string | string[]>([]);
-  const [title, setTitle] = useState('')
-  const [text, setText] = useState('')
-  const [type, setType] = useState('')
+export default function AddNoticeDrawer({ open, setOpen }: DrawerComponentProps) {
+  const [company, setCompany] = useState<string | string[]>('');
+  const [title, setTitle] = useState('');
+  const [text, setText] = useState('');
+  const [type, setType] = useState('');
   const queryClient = useQueryClient();
   const [current, setCurrent] = useState(0);
-  const [file, setFile] = useState<File | undefined>()
-  const [id, setId] = useState()
-  const [noticeUuids, setNoticeUuids] = useState([])
+  const [file, setFile] = useState<File | undefined>();
+  const [id, setId] = useState();
+  const editor = useRef(null);
 
-  const users = typeof companys !== 'string' && companys.map((user) => ({ name: '', uuid: user }))
+  const config = {
+    readonly: false,
+    height: 400,
+  };
 
   const createNotice = useMutation({
     mutationKey: ['create-notice'],
-    mutationFn: async () => await httpClient({
-      path: '/notice',
-      method: 'POST',
-      data: { title, text, users, type }
-    }),
-    onSuccess: () => {
-      setOpen(false)
-      setTitle('')
-      setText('')
-      setCompanys([])
-      setType('')
-      return queryClient.invalidateQueries({ queryKey: ["notice-page"] });
-    },
+    mutationFn: async () =>
+      await httpClient({
+        path: '/notice',
+        method: 'POST',
+        data: { title, text, user: company },
+      }),
+    onSuccess: (data) => setId(data),
     onError: (error: AxiosError | any) => {
       if (error.response) {
-        message.error(error.response?.data.message)
+        message.error(error.response?.data.message);
       }
-    }
-  })
+    },
+  });
 
-  const isMutation = useIsMutating({ mutationKey: ["create-notice"], exact: true });
+  const isMutation = useIsMutating({ mutationKey: ['create-notice'], exact: true });
+
+  const onClose = () => {
+    setTitle('');
+    setText('');
+    setType('');
+    setOpen(false);
+    setCurrent(0);
+  };
 
   const handleNextStep = () => {
     if (current === 0) {
-      createNotice.mutate()
-      return setCurrent(1)
+      createNotice.mutate();
+      return setCurrent(1);
     }
 
-    setOpen(false)
-  }
+    onClose();
+    return queryClient.invalidateQueries({ queryKey: ['notice-page'] });
+  };
 
   return (
     <Drawer
       title="Criar aviso"
       width={720}
-      onClose={() => setOpen(false)}
+      onClose={onClose}
       open={open}
       styles={{ body: { paddingBottom: 80 } }}
       extra={
         <Space>
-          <Button onClick={() => setOpen(false)}>Cancelar</Button>
+          <Button onClick={onClose}>Cancelar</Button>
           <Button onClick={handleNextStep} type="primary">
             {isMutation ? (
               <PulseLoader color="#fff" size={6} loading={true} />
+            ) : current === 0 ? (
+              'Próximo'
             ) : (
-              "Próximo"
+              'Enviar'
             )}
           </Button>
         </Space>
-      }
-    >
+      }>
       <Form layout="vertical" hideRequiredMark>
         <Steps
           current={current}
-          items={[
-            { title: 'Preencha o aviso' },
-            { title: 'Faça o upload' }
-          ]}
+          items={[{ title: 'Preencha o aviso' }, { title: 'Faça o upload' }]}
           style={{ marginBottom: 40 }}
         />
         <Form.Item
-          name="type"
-          label="Escolha para quem deseja enviar"
-          rules={[{ required: true, message: "Selecione uma empresa" }]}
-        >
-
-          <Select
-            style={{ width: '100%' }}
-            onChange={(e) => setType(e)}
-            options={[
-              { value: 'SELECTED_COMPANYS', label: 'Selecione as empresas' },
-              { value: 'SELECTED_USERS', label: 'Selecione os coloboradores' },
-              { value: 'ALL_COMPANYS', label: 'Todas as empresas' },
-              { value: 'ALL_USERS', label: 'Todos os colaboradores', },
-            ]}
-          />
+          name="name"
+          label="Empresa"
+          rules={[{ required: true, message: 'Coloque seu Nome' }]}>
+          <SelectCompany setCompanys={setCompany} companys={company} />
         </Form.Item>
-        {type === "SELECTED_COMPANYS" ? (
-          <Form.Item
-            name="name"
-            label="Empresa"
-            rules={[{ required: true, message: "Selecione uma empresa" }]}
-          >
-            <SelectCompany
-              setCompanys={setCompanys}
-              companys={companys}
-              mode="multiple"
-            />
-          </Form.Item>
-        ) : null}
-        {type === "SELECTED_USERS" ? (
-          <Form.Item
-            name="users"
-            label="Usuários"
-            rules={[{ required: true, message: "Selecione os usuários" }]}
-          >
-            <SelectUsers
-              setUsers={setCompanys}
-              users={companys}
-              mode="multiple"
-            />
-          </Form.Item>
-        ) : null}
         <Form.Item
           name="title"
           label="Título"
-          rules={[{ required: true, message: "Coloque um título" }]}
-        >
+          rules={[{ required: true, message: 'Coloque um título' }]}>
           <Input
             placeholder="Coloque um título"
             style={{ width: '100%' }}
-            onChange={(e) => setTitle(e.target.value)} value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            value={title}
+            disabled={current === 1}
           />
         </Form.Item>
         <Form.Item
           name="text"
           label="Aviso"
-          rules={[{ required: true, message: "Preencha o aviso" }]}
-        >
-          <Tiptap setText={setText} />
+          rules={[{ required: true, message: 'Preencha o aviso' }]}>
+          <JoditEditor
+            ref={editor}
+            value={text}
+            config={config}
+            onBlur={(event) => setText(event)}
+            onChange={(newContent) => {}}
+          />
         </Form.Item>
-        <Form.Item
-          name="upload-document"
-          label="Anexar um documento"
-        >
+        <Form.Item name="upload-document" label="Anexar um documento">
           <Dragger
             disabled={current === 0}
             name="file"
             action={`http://localhost:3009/document/upload/${id}?name=${file?.name}&mimeType=${file?.type}&type=NOTICE`}
             headers={{
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
             }}
             beforeUpload={(file) => {
-              const uploadFile = file as unknown as File
-              setFile(uploadFile)
+              const uploadFile = file as unknown as File;
+              setFile(uploadFile);
             }}
             showUploadList={{
               showDownloadIcon: true,
               showRemoveIcon: true,
               removeIcon: (
-                <StarOutlined
-                  onClick={(e) => console.log(e, "custom removeIcon event")}
-                />
+                <StarOutlined onClick={(e) => console.log(e, 'custom removeIcon event')} />
               ),
             }}
             onChange={(info) => {
-              if (info.file.status !== "uploading") {
+              if (info.file.status !== 'uploading') {
                 console.log(info.file, info.fileList);
               }
-              if (info.file.status === "done") {
+              if (info.file.status === 'done') {
                 message.success(`Ocorreu um erro ao enviar o documento ${info.file.name}.`);
-
-
-              } else if (info.file.status === "error") {
+              } else if (info.file.status === 'error') {
                 message.error(`Ocorreu um erro ao enviar o documento ${info.file.name}.`);
               }
             }}
-            style={{ width: '100%' }}
-          >
+            style={{ width: '100%' }}>
             <p className="ant-upload-drag-icon">
               <InboxOutlined />
             </p>
-            <p className="ant-upload-text">
-              Clique aqui ou arraste o documento para fazer o envio
-            </p>
+            <p className="ant-upload-text">Clique aqui ou arraste o documento para fazer o envio</p>
             <p className="ant-upload-hint">
-              Selecione o documento solicitado, os formatos aceitos são pdf e
-              word e excel.
+              Selecione o documento solicitado, os formatos aceitos são pdf e word e excel.
             </p>
           </Dragger>
         </Form.Item>
