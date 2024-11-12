@@ -130,7 +130,7 @@ export default function AddNoticeDrawer({ open, setOpen }: DrawerComponentProps)
           <Dragger
             disabled={current === 0}
             name="file"
-            action={`http://localhost:3009/document/upload/${id}?name=${file?.name}&mimeType=${file?.type}&type=NOTICE`}
+            action={`http://localhost:3009/document/upload/${id}?name=${file?.name}&mimeType=${file?.type}&type=NOTICE&size=${file?.size}`}
             headers={{
               Authorization: `Bearer ${localStorage.getItem('token')}`,
             }}

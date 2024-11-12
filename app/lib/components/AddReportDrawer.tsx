@@ -6,7 +6,6 @@ import SelectCompany from './SelectCompany';
 import { AxiosError } from 'axios';
 import { useIsMutating, useMutation, useQueryClient } from '@tanstack/react-query';
 import PulseLoader from 'react-spinners/PulseLoader';
-import Tiptap from './Tiptap';
 import { httpClient } from '../utils/httpClient';
 import { InboxOutlined, StarOutlined } from '@ant-design/icons';
 import Dragger from 'antd/es/upload/Dragger';
@@ -137,7 +136,7 @@ export default function AddReportDrawer({ open, setOpen }: DrawerComponentProps)
           <Dragger
             disabled={current === 0}
             name="file"
-            action={`http://localhost:3009/document/upload/${id}?name=${file?.name}&mimeType=${file?.type}&type=REPORT`}
+            action={`http://localhost:3009/document/upload/${id}?name=${file?.name}&mimeType=${file?.type}&type=REPORT&size=${file?.size}`}
             headers={{
               Authorization: `Bearer ${localStorage.getItem('token')}`,
             }}
@@ -157,7 +156,7 @@ export default function AddReportDrawer({ open, setOpen }: DrawerComponentProps)
                 console.log(info.file, info.fileList);
               }
               if (info.file.status === 'done') {
-                message.success(`Ocorreu um erro ao enviar o documento ${info.file.name}.`);
+                message.success(`Sucesso ao enviar o documento ${info.file.name}.`);
               } else if (info.file.status === 'error') {
                 message.error(`Ocorreu um erro ao enviar o documento ${info.file.name}.`);
               }
