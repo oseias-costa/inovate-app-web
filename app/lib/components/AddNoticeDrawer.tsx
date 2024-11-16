@@ -4,13 +4,15 @@ import { Button, Drawer, Form, Input, Select, Space, message, Steps } from 'antd
 import 'dayjs/locale/pt-br';
 import SelectCompany from './SelectCompany';
 import { AxiosError } from 'axios';
-import { useIsMutating, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useIsMutating, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import PulseLoader from 'react-spinners/PulseLoader';
 import { httpClient } from '../utils/httpClient';
 import { File } from '@/app/lib/types/upload.type';
 import Dragger from 'antd/es/upload/Dragger';
 import { InboxOutlined, PlusOutlined, StarOutlined } from '@ant-design/icons';
 import JoditEditor from 'jodit-react';
+import SelectTag from './SelectTag';
+import AddTag from './AddTag';
 
 type DrawerComponentProps = {
   open: boolean;
@@ -21,7 +23,7 @@ export default function AddNoticeDrawer({ open, setOpen }: DrawerComponentProps)
   const [company, setCompany] = useState<string | string[]>('');
   const [title, setTitle] = useState('');
   const [text, setText] = useState('');
-  const [type, setType] = useState('');
+  const [tag, setTag] = useState('');
   const queryClient = useQueryClient();
   const [current, setCurrent] = useState(0);
   const [file, setFile] = useState<File | undefined>();
@@ -54,7 +56,6 @@ export default function AddNoticeDrawer({ open, setOpen }: DrawerComponentProps)
   const onClose = () => {
     setTitle('');
     setText('');
-    setType('');
     setOpen(false);
     setCurrent(0);
   };
@@ -68,6 +69,16 @@ export default function AddNoticeDrawer({ open, setOpen }: DrawerComponentProps)
     onClose();
     return queryClient.invalidateQueries({ queryKey: ['notice-page'] });
   };
+
+  const createTag = useMutation({
+    mutationKey: ['create-tag'],
+    mutationFn: async (data) =>
+      httpClient({
+        path: '/tag',
+        method: 'PATCH',
+        data,
+      }),
+  });
 
   return (
     <Drawer
@@ -114,6 +125,7 @@ export default function AddNoticeDrawer({ open, setOpen }: DrawerComponentProps)
             disabled={current === 1}
           />
         </Form.Item>
+        <AddTag tag={tag} setTag={setTag} type="NOTICE" current={current} />
         <Form.Item
           name="text"
           label="Aviso"
