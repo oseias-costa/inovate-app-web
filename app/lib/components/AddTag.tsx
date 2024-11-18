@@ -98,7 +98,7 @@ export default function AddTag({ setTag, value, tag, type, current }: SelectTagP
             </Button>
             <Button type="primary" onClick={() => createTag.mutate()}>
               {' '}
-              {isMutation ? <PulseLoader color="#fff" size={6} loading={true} /> : 'Entrar'}
+              {isMutation ? <PulseLoader color="#fff" size={6} loading={true} /> : 'Adicionar'}
             </Button>
           </div>
         </div>

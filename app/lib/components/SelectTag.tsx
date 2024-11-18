@@ -4,7 +4,7 @@ import { Dispatch, SetStateAction, useEffect } from 'react';
 import { httpClient } from '../utils/httpClient';
 
 type Options = {
-  value: { uuid: string; name: string };
+  value: { id: string; name: string };
   label: string;
 };
 
@@ -32,17 +32,10 @@ export default function SelectTag({ setTag, value, tag, type }: SelectTagProps) 
 
   let options: Options[] = [];
 
-  useEffect(() => {
-    if (value) {
-      options.push({ value: { uuid: '1', name: '' }, label: value });
-    } else {
-      data?.map((item: any) => options.push({ value: item.uuid, label: item.name }));
-    }
-  }, [data]);
   if (value) {
-    options.push({ value: { uuid: '1', name: '' }, label: value });
+    options.push({ value: { id: 1, name: '' }, label: value });
   } else {
-    data?.map((item: any) => options.push({ value: item.uuid, label: item.name }));
+    data?.map((item: any) => options.push({ value: item.id, label: item.name }));
   }
 
   return (
@@ -53,9 +46,6 @@ export default function SelectTag({ setTag, value, tag, type }: SelectTagProps) 
       style={{ marginRight: 10, marginBottom: 10, width: '100%' }}
       onSelect={(value) => {
         setTag(value);
-        return queryClient.invalidateQueries({
-          queryKey: ['companys', 1],
-        });
       }}
       filterOption={(input, option) => (option?.label ?? '').includes(input)}
       filterSort={(optionA, optionB) =>

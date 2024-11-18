@@ -22,6 +22,7 @@ import { useIsMutating, useMutation, useQueryClient } from '@tanstack/react-quer
 import PulseLoader from 'react-spinners/PulseLoader';
 import { useUser } from './UserProvider';
 import { httpClient } from '../utils/httpClient';
+import AddTag from './AddTag';
 
 type DrawerComponentProps = {
   open: boolean;
@@ -37,6 +38,7 @@ export default function DrawerComponent({ open, setOpen }: DrawerComponentProps)
     description: '',
     expiration: '',
   });
+  const [tag, setTag] = useState('');
 
   const onChange: DatePickerProps['onChange'] = (date, dateString) => {
     const d = new Date(date.toDate());
@@ -46,7 +48,6 @@ export default function DrawerComponent({ open, setOpen }: DrawerComponentProps)
   const onClose = () => {
     setOpen(false);
   };
-
   const isMutation = useIsMutating({ mutationKey: ['create-request'], exact: true });
 
   const mutation = useMutation({
@@ -58,6 +59,7 @@ export default function DrawerComponent({ open, setOpen }: DrawerComponentProps)
         data: {
           requesterUuid: user?.uuid,
           companyUuid: company,
+          tag,
           ...request,
         },
       }),
@@ -139,6 +141,7 @@ export default function DrawerComponent({ open, setOpen }: DrawerComponentProps)
             autoSize={{ minRows: 2, maxRows: 6 }}
           />
         </Form.Item>
+        <AddTag tag={tag} setTag={setTag} type="REQUEST" current={0} />
       </Form>
     </Drawer>
   );

@@ -41,7 +41,7 @@ export default function AddNoticeDrawer({ open, setOpen }: DrawerComponentProps)
       await httpClient({
         path: '/notice',
         method: 'POST',
-        data: { title, text, user: company },
+        data: { title, text, user: company, tag },
       }),
     onSuccess: (data) => setId(data),
     onError: (error: AxiosError | any) => {

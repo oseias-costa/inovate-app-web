@@ -11,6 +11,7 @@ import { InboxOutlined, StarOutlined } from '@ant-design/icons';
 import Dragger from 'antd/es/upload/Dragger';
 import { useUser } from './UserProvider';
 import JoditEditor from 'jodit-react';
+import AddTag from './AddTag';
 
 type DrawerComponentProps = {
   open: boolean;
@@ -27,6 +28,7 @@ export default function AddReportDrawer({ open, setOpen }: DrawerComponentProps)
   const [id, setId] = useState();
   const { user } = useUser();
   const editor = useRef(null);
+  const [tag, setTag] = useState('');
 
   const config = {
     readonly: false,
@@ -44,6 +46,7 @@ export default function AddReportDrawer({ open, setOpen }: DrawerComponentProps)
           text,
           companyUuid: companys,
           authorUuid: user?.uuid,
+          tag,
         },
       }),
     onSuccess: (data) => {
@@ -132,6 +135,7 @@ export default function AddReportDrawer({ open, setOpen }: DrawerComponentProps)
             onChange={(newContent) => {}}
           />{' '}
         </Form.Item>
+        <AddTag tag={tag} setTag={setTag} type="REPORT" current={current} />
         <Form.Item name="upload-document" label="Anexar um documento">
           <Dragger
             disabled={current === 0}
