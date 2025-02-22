@@ -2,6 +2,11 @@
   "name": "inovate-web",
   "version": "0.1.0",
   "private": true,
+  "browser": {
+  "fs": false,
+  "path": false,
+  "os": false
+},
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -13,6 +18,7 @@
     "@ant-design/icons": "^5.3.7",
     "@ant-design/nextjs-registry": "^1.0.0",
     "@emotion/unitless": "^0.10.0",
+    "@next/env": "^15.1.6",
     "@tanstack/query-sync-storage-persister": "^5.29.0",
     "@tanstack/react-query": "^5.28.14",
     "@tanstack/react-query-persist-client": "^5.29.0",

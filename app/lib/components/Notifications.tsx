@@ -67,7 +67,7 @@ const Content = () => {
       />
       <Flex justify="center" align="center">
         <Button style={{ textAlign: 'center' }} onClick={() => fetchNextPage()}>
-          Carregar
+          Carregar mais
         </Button>
       </Flex>
     </Container>

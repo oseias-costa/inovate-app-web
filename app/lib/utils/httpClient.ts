@@ -8,8 +8,8 @@ interface HttpClient {
 }
 
 export const httpClient = async (httpData: HttpClient) => {
-  const token = `Bearer ${localStorage.getItem("token")}` 
-const url = new URL(`http://localhost:3009${httpData.path}`);
+  const token = `Bearer ${localStorage.getItem('token')}`;
+  const url = new URL(`http://localhost:30009${httpData.path}`);
   const params = new URLSearchParams();
 
   if (httpData.queryString) {
