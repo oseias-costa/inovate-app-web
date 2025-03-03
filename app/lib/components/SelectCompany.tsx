@@ -24,7 +24,7 @@ export default function SelectCompany({ setCompanys, value, mode, companys }: Se
   if (value) {
     options.push({ value: { uuid: '1', name: '' }, label: value });
   } else {
-    data?.map((item: any) => options.push({ value: item.uuid, label: item.name }));
+    data && data?.map((item: any) => options.push({ value: item.uuid, label: item.name }));
   }
   console.log(companys, 'Ver se é array');
   return (

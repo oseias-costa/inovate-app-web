@@ -15,23 +15,22 @@ interface CompanyTableType {
 }
 
 const TableInactiveUsers: React.FC = () => {
-
   const getCompanysByStatus = async () => {
     const data = await axios({
       method: 'get',
       baseURL: 'http://localhost:3009/users/INACTIVE',
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-    })
-    return data.data
-  }
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+    });
+    return data.data;
+  };
 
   const { data } = useQuery<Company[]>({
     queryKey: ['companys-desactive'],
-    queryFn: getCompanysByStatus
-  })
-  const [openDocumentDetais, setOpenDocumentDetais] = useState(false)
-  const queryClient = useQueryClient()
-  const router = useRouter()
+    queryFn: getCompanysByStatus,
+  });
+  const [openDocumentDetais, setOpenDocumentDetais] = useState(false);
+  const queryClient = useQueryClient();
+  const router = useRouter();
 
   const columns: TableProps<CompanyTableType>['columns'] = [
     {
@@ -39,67 +38,71 @@ const TableInactiveUsers: React.FC = () => {
       dataIndex: 'name',
       key: 'name',
       render: (id) => {
-        return <p>{id}</p>
-      }
+        return <p>{id}</p>;
+      },
     },
     {
       title: 'E-mail',
       dataIndex: 'email',
       key: 'email',
-      render: (v) => <p>{v}</p>
+      render: (v) => <p>{v}</p>,
     },
     {
       title: 'Status',
       key: 'status',
       dataIndex: 'status',
       render: (status) => {
-        console.log('COLORRRRRRRR', status)
-        let color
+        console.log('COLORRRRRRRR', status);
+        let color;
         switch (status) {
           case 'EXPIRED':
-            color = 'volcano'
-            break
+            color = 'volcano';
+            break;
           case 'PEDING':
-            color = 'geekblue'
-            break
+            color = 'geekblue';
+            break;
           case 'FINISH':
-            color = 'green'
-            break
+            color = 'green';
+            break;
         }
-        console.log('COLORRRRRRRR', color)
+        console.log('COLORRRRRRRR', color);
         return (
           <Tag color={color} key={status}>
             {status}
           </Tag>
-        )
-      }
+        );
+      },
     },
     {
       title: 'Ação',
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
-          <Button type='text' style={{ color: '#1677ff' }} onClick={() => {
-            router.push(`/portal/documentos/${record.id}`)
-            return queryClient.invalidateQueries({ queryKey: ['document-detail'] })
-          }}>Editar</Button>
+          <Button
+            type="text"
+            style={{ color: '#1677ff' }}
+            onClick={() => {
+              router.push(`/portal/documentos/${record.id}`);
+              return queryClient.invalidateQueries({ queryKey: ['document-detail'] });
+            }}>
+            Editar
+          </Button>
         </Space>
       ),
     },
   ];
 
-  let options: CompanyTableType[] = []
-  console.log(data)
-  const convertData = data?.map((item: any) => {
-    options.push({ id: item.id, name: item.name, email: item.email, status: item.status })
-  })
+  let options: CompanyTableType[] = [];
+  console.log(data);
+  const convertData =
+    data &&
+    data!!.map((item: any) => {
+      options.push({ id: item.id, name: item.name, email: item.email, status: item.status });
+    });
 
   return (
     <>
-      <DrawerCompany
-        open={openDocumentDetais}
-        setOpen={setOpenDocumentDetais}
-      />
+      <DrawerCompany open={openDocumentDetais} setOpen={setOpenDocumentDetais} />
       <Table
         loading={!data}
         columns={columns}
@@ -107,7 +110,7 @@ const TableInactiveUsers: React.FC = () => {
         style={{ width: 'calc(100vw - 326px)' }}
       />
     </>
-  )
+  );
 };
 
-export default TableInactiveUsers
+export default TableInactiveUsers;
