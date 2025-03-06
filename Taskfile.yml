@@ -1,0 +1,17 @@
+version: '3'
+
+tasks:
+  build:
+    desc: Run migrates
+    cmds:
+      - source .env.local
+      - docker build -t inovate-web-app .
+      - docker tag inovate-web-app inovate.localhost:5000/inovate-web-app:latest
+      - docker push inovate.localhost:5000/inovate-web-app:latest
+      - kubectl get deployment web-app >/dev/null 2>&1 && kubectl delete deployment web-app || echo "web-app deployment not found, skipping delete"
+      - kubectl apply -f /home/oseias-costa/Documents/inovate/inovate-backend/lib/kubernetes/web-app.yaml
+
+  default:
+    desc: List all tasks
+    cmds:
+      - task --list-all
