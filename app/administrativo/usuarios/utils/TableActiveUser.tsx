@@ -92,8 +92,8 @@ const TableActiveUser: React.FC = () => {
   let options: CompanyTableType[] = [];
   console.log(data);
   const convertData =
-    data ??
-    data?.map((item: any) => {
+    data &&
+    data!!.map((item: CompanyTableType) => {
       options.push({ id: item.id, name: item.name, email: item.email, status: item.status });
     });
 

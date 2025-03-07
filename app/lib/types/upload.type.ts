@@ -1,49 +1,49 @@
 export interface UploadFile {
-  file: File
-  fileList: FileList[]
+  file: File;
+  fileList: FileList[];
 }
 
 export interface File {
-  uid: string
-  lastModified: number
-  lastModifiedDate: string
-  name: string
-  size: number
-  type: string
-  percent: number
-  originFileObj: OriginFileObj
-  status: string
-  response: string
-  xhr: Xhr
+  uid: string;
+  lastModified: number;
+  lastModifiedDate: string;
+  name: string;
+  size: number;
+  type: string;
+  percent: number;
+  originFileObj: OriginFileObj;
+  status: string;
+  response: string;
+  xhr: Xhr;
 }
 
 export interface OriginFileObj {
-  uid: string
+  uid: string;
 }
 
-export interface Xhr { }
+export interface Xhr {}
 
 export interface FileList {
-  uid: string
-  lastModified: number
-  lastModifiedDate: string
-  name: string
-  size: number
-  type: string
-  percent: number
-  originFileObj: OriginFileObj2
-  status: string
-  response: string
-  xhr: Xhr2
+  uid: string;
+  lastModified: number;
+  lastModifiedDate: string;
+  name: string;
+  size: number;
+  type: string;
+  percent: number;
+  originFileObj: OriginFileObj2;
+  status: string;
+  response: string;
+  xhr: Xhr2;
 }
 
 export interface OriginFileObj2 {
-  uid: string
+  uid: string;
 }
 
-export interface Xhr2 { }
+export interface Xhr2 {}
 
-export interface RcFile extends OriRcFile {
+export interface RcFile {
   readonly lastModifiedDate: Date;
 }
 

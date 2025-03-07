@@ -1,3 +1,4 @@
+'use client';
 import React, { useState } from 'react';
 import { Button, Space, Table, Tag } from 'antd';
 import type { TableProps } from 'antd';
@@ -96,7 +97,7 @@ const TableInactiveUsers: React.FC = () => {
   console.log(data);
   const convertData =
     data &&
-    data!!.map((item: any) => {
+    data!!.map((item: CompanyTableType) => {
       options.push({ id: item.id, name: item.name, email: item.email, status: item.status });
     });
 

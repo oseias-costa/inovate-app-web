@@ -1,28 +1,18 @@
-"use client";
-import {
-  Breadcrumb,
-  Col,
-  ConfigProvider,
-  DatePicker,
-  Form,
-  Input,
-  Row,
-  Tag,
-  message,
-} from "antd";
-import locale from "antd/locale/pt_BR";
-import dayjs from "dayjs";
-import "dayjs/locale/pt-br";
-import TextArea from "antd/es/input/TextArea";
-import useGetDocumentDetails from "@/app/lib/hooks/useGetDocumentDetails";
-import { PulseLoader } from "react-spinners";
-import { InboxOutlined, StarOutlined, UploadOutlined } from "@ant-design/icons";
-import { useParams } from "next/navigation";
-import Image from "next/image";
-import Logo from "@/public/assets/logo-i.png";
-import Link from "next/link";
-import Dragger from "antd/es/upload/Dragger";
-import isAuth from "@/app/lib/components/isAuth";
+'use client';
+import { Breadcrumb, Col, ConfigProvider, DatePicker, Form, Input, Row, Tag, message } from 'antd';
+import locale from 'antd/locale/pt_BR';
+import dayjs from 'dayjs';
+import 'dayjs/locale/pt-br';
+import TextArea from 'antd/es/input/TextArea';
+import useGetDocumentDetails from '@/app/lib/hooks/useGetDocumentDetails';
+import { PulseLoader } from 'react-spinners';
+import { InboxOutlined, StarOutlined, UploadOutlined } from '@ant-design/icons';
+import { useParams } from 'next/navigation';
+import Image from 'next/image';
+import Logo from '@/public/assets/logo-i.png';
+import Link from 'next/link';
+import Dragger from 'antd/es/upload/Dragger';
+import isAuth from '@/app/lib/components/isAuth';
 
 const DocumentPage = () => {
   const params = useParams();
@@ -32,13 +22,13 @@ const DocumentPage = () => {
 
   const items = [
     {
-      title: "Aberta",
+      title: 'Aberta',
     },
     {
-      title: "Aguardando",
+      title: 'Aguardando',
     },
     {
-      title: "Finalizada",
+      title: 'Finalizada',
     },
   ];
 
@@ -46,14 +36,13 @@ const DocumentPage = () => {
     return (
       <div
         style={{
-          width: "calc(100vw - 350px)",
+          width: 'calc(100vw - 350px)',
           marginTop: 100,
-          display: "flex",
-          justifyContent: "center",
-          alignContent: "center",
-        }}
-      >
-        <div style={{ textAlign: "center" }}>
+          display: 'flex',
+          justifyContent: 'center',
+          alignContent: 'center',
+        }}>
+        <div style={{ textAlign: 'center' }}>
           <Image src={Logo} alt="Logo" width={50} />
           <PulseLoader color="#00264B" size={8} loading={true} />
         </div>
@@ -68,18 +57,19 @@ const DocumentPage = () => {
           { title: <Link href="/portal/dashboard">Início</Link> },
           { title: <Link href="/portal/documentos">Documentos</Link> },
           {
-            title: (
-              <p style={{ color: "rgba(0, 0, 0, 0.45)" }}>{data?.document}</p>
-            ),
+            title: <p style={{ color: 'rgba(0, 0, 0, 0.45)' }}>{data?.name}</p>,
           },
         ]}
         style={{ paddingBottom: 10 }}
       />
       <div style={{ display: 'flex' }}>
-        <h2 style={{ fontWeight: 400, paddingBottom: 25, color: "#404040" }}>
+        <h2 style={{ fontWeight: 400, paddingBottom: 25, color: '#404040' }}>
           Detalhes da Solicitação
         </h2>
-        <Tag color={'geekblue'} key={data?.status} style={{ maxHeight: 20, marginTop: 6, marginLeft: 15 }}>
+        <Tag
+          color={'geekblue'}
+          key={data?.status}
+          style={{ maxHeight: 20, marginTop: 6, marginLeft: 15 }}>
           {data?.status}
         </Tag>
       </div>
@@ -97,9 +87,8 @@ const DocumentPage = () => {
           <Form.Item
             name="name"
             label="Empresa"
-            rules={[{ required: true, message: "Coloque seu Nome" }]}
-            initialValue={data?.companyId}
-          >
+            rules={[{ required: true, message: 'Coloque seu Nome' }]}
+            initialValue={data?.companyId}>
             <Input value={data?.companyId} disabled />
           </Form.Item>
         </Col>
@@ -108,8 +97,7 @@ const DocumentPage = () => {
             name="requester"
             label="Solicitante"
             initialValue={data?.requesterId}
-            rules={[{ required: true, message: "Coloque seu Sobrenome" }]}
-          >
+            rules={[{ required: true, message: 'Coloque seu Sobrenome' }]}>
             <Input placeholder="Coloque seu Sobrenome" disabled />
           </Form.Item>
         </Col>
@@ -119,25 +107,24 @@ const DocumentPage = () => {
           <Form.Item
             name="description"
             label="Documento"
-            rules={[{ required: true, message: "Coloque seu Sobrenome" }]}
-            initialValue={data?.document}
-          >
+            rules={[{ required: true, message: 'Coloque seu Sobrenome' }]}
+            initialValue={data?.name}>
             <Input
-              value={data?.document}
+              value={data?.name}
               disabled
-              styles={{ input: { color: "#666666", backgroundColor: "#fff" } }}
+              styles={{ input: { color: '#666666', backgroundColor: '#fff' } }}
               onChange={(e) => console.log(e)}
             />
           </Form.Item>
         </Col>
         <Col span={12}>
-          <p style={{ height: "22px", marginBottom: "8px" }}>Prazo</p>
+          <p style={{ height: '22px', marginBottom: '8px' }}>Prazo</p>
           <ConfigProvider locale={locale}>
             <DatePicker
               defaultValue={date}
               contentEditable={false}
               format="DD-MM-YYYY"
-              style={{ width: "100%" }}
+              style={{ width: '100%' }}
             />
           </ConfigProvider>
         </Col>
@@ -145,9 +132,8 @@ const DocumentPage = () => {
           <Form.Item
             name="lastName"
             label="Descrição"
-            rules={[{ required: true, message: "Coloque seu Sobrenome" }]}
-            initialValue={data?.description}
-          >
+            rules={[{ required: true, message: 'Coloque seu Sobrenome' }]}
+            initialValue={data?.description}>
             <TextArea
               // onChange={(e) => setRequest({...request, description: e.target.value})}
               placeholder="Escreva uma descrição"
@@ -161,38 +147,32 @@ const DocumentPage = () => {
           <Form.Item
             name="description"
             label="Upload"
-            rules={[{ required: true, message: "Coloque seu Sobrenome" }]}
-            initialValue={data?.document}
-          >
+            rules={[{ required: true, message: 'Coloque seu Sobrenome' }]}
+            initialValue={data?.name}>
             <Dragger
               name="file"
               action={`http://localhost:3009/document/upload/${data?.id}`}
               headers={{
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
               }}
-              isImageUrl={(file) => data?.url !== ""}
+              isImageUrl={(file) => data?.url !== ''}
               showUploadList={{
                 showDownloadIcon: true,
                 showRemoveIcon: true,
                 removeIcon: (
-                  <StarOutlined
-                    onClick={(e) => console.log(e, "custom removeIcon event")}
-                  />
+                  <StarOutlined onClick={(e) => console.log(e, 'custom removeIcon event')} />
                 ),
               }}
               onChange={(info) => {
-                if (info.file.status !== "uploading") {
+                if (info.file.status !== 'uploading') {
                   console.log(info.file, info.fileList);
                 }
-                if (info.file.status === "done") {
-                  message.success(
-                    `${info.file.name} documento enviado com sucesso`
-                  );
-                } else if (info.file.status === "error") {
+                if (info.file.status === 'done') {
+                  message.success(`${info.file.name} documento enviado com sucesso`);
+                } else if (info.file.status === 'error') {
                   message.error(`Ocorreu um erro ao enviar o documento ${info.file.name}.`);
                 }
-              }}
-            >
+              }}>
               <p className="ant-upload-drag-icon">
                 <InboxOutlined />
               </p>
@@ -200,8 +180,7 @@ const DocumentPage = () => {
                 Clique aqui ou arraste o documento para fazer o envio
               </p>
               <p className="ant-upload-hint">
-                Selecione o documento solicitado, os formatos aceitos são pdf e
-                word e excel.
+                Selecione o documento solicitado, os formatos aceitos são pdf e word e excel.
               </p>
             </Dragger>
           </Form.Item>

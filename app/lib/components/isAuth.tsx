@@ -1,38 +1,48 @@
-import { useQuery } from "@tanstack/react-query"
-import axios from "axios"
-import { redirect, useParams } from "next/navigation"
-import React, { useEffect } from "react"
-import { useUser } from "./UserProvider"
-import { httpClient } from "../utils/httpClient"
+'use client';
+import { useQuery } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
+import { redirect } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import { useUser } from './UserProvider';
+import { httpClient } from '../utils/httpClient';
+import { User } from '../types/user.type';
 
 export type UserProps = {
-  createAt: string,
-  email: string,
-  id: string,
-  name: string,
-  password: string,
-  reamlID: string,
-  status: "ACTIVE" | "INACTIVE",
-  type: "ADMIN" | "USER",
-  updateAt: string
-}
+  createAt: string;
+  email: string;
+  id: string;
+  name: string;
+  password: string;
+  reamlID: string;
+  status: 'ACTIVE' | 'INACTIVE';
+  type: 'ADMIN' | 'USER';
+  updateAt: string;
+};
 
 export default function isAuth(Component: any) {
   return function IsAuth(props: any) {
-    const { user, setUser } = useUser()
-    const url = window.location.href
-    const token = localStorage?.getItem('token')
+    const { user, setUser } = useUser();
+    const [token, setToken] = useState('');
+    const [url, setUrl] = useState('');
 
     useEffect(() => {
-      if (!token) {
-        return redirect(`/entrar/login?redirectUri=${url}`)
+      if (typeof window !== 'undefined') {
+        // setUrl(window.location.href);
+        const token = window?.localStorage?.getItem('token');
+
+        if (!token) {
+          redirect('/login');
+        }
       }
-    }, [token])
+    }, [token]);
 
     const { data, isError, error, isSuccess, refetch, isFetched } = useQuery<User>({
       queryKey: ['user'],
       queryFn: async () => {
-        const token = `Bearer ${localStorage.getItem("token")}`
+        if (typeof window !== 'undefined') {
+          setToken(localStorage.getItem('token') || '');
+        }
+        const token = `Bearer ${window?.localStorage.getItem('token')}`;
         return httpClient({
           method: 'GET',
           path: `/users/get-user/${token}`,
@@ -43,7 +53,7 @@ export default function isAuth(Component: any) {
 
     useEffect(() => {
       const handleEffect = () => {
-        if (user) return
+        if (user) return;
 
         if (isSuccess) {
           setUser(data);
@@ -53,7 +63,7 @@ export default function isAuth(Component: any) {
           refetch();
         }
         if (isFetched && !data) {
-          return router.push('/entrar/login');
+          return redirect('/entrar/login');
         }
 
         if (isError) {
@@ -61,11 +71,11 @@ export default function isAuth(Component: any) {
           const getError = error as AxiosError;
           if (getError.response?.status === 401) {
             setUser(null);
-            localStorage.removeItem('token');
+            window?.localStorage.removeItem('token');
             return redirect(`/entrar/login?redirectUri=${url}`);
           }
         }
-      }
+      };
 
       handleEffect();
     }, [data, error, user]);
@@ -75,6 +85,6 @@ export default function isAuth(Component: any) {
     //   return redirect(`/entrar/login?redirectUri=${url}`)
     // }
 
-    return <Component {...props} />
-  }
+    return <Component {...props} />;
+  };
 }

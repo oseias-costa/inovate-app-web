@@ -1,3 +1,4 @@
+'use client';
 import { useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import React, { ReactNode, createContext, useContext, useEffect, useState } from 'react';

@@ -1,3 +1,4 @@
+'use client';
 import axios from 'axios';
 
 interface HttpClient {
@@ -8,7 +9,11 @@ interface HttpClient {
 }
 
 export const httpClient = async (httpData: HttpClient) => {
-  const token = `Bearer ${localStorage.getItem('token')}`;
+  if (typeof window === 'undefined') {
+    return Promise.reject(new Error('LocalStorage is not available on the server'));
+  }
+
+  const token = `Bearer ${window?.localStorage.getItem('token')}`;
   const url = new URL(`http://localhost:30009${httpData.path}`);
   const params = new URLSearchParams();
 

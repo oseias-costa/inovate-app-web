@@ -1,3 +1,4 @@
+'use client';
 import { useQueryClient } from '@tanstack/react-query';
 import { Select } from 'antd';
 import { Dispatch, SetStateAction } from 'react';

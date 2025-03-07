@@ -33,7 +33,7 @@ export default function SelectTag({ setTag, value, tag, type }: SelectTagProps) 
   let options: Options[] = [];
 
   if (value) {
-    options.push({ value: { id: 1, name: '' }, label: value });
+    options.push({ value: { id: '1', name: '' }, label: value });
   } else {
     data?.map((item: any) => options.push({ value: item.id, label: item.name }));
   }

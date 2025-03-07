@@ -31,6 +31,7 @@ import EditRequest from '@/app/lib/components/EditRequest';
 import { File } from '@/app/lib/types/upload.type';
 import { DownloadOutlined } from '@ant-design/icons';
 import axios from 'axios';
+import { Document } from '@/app/lib/types/document.type';
 
 type NotificationType = 'success' | 'info' | 'warning' | 'error';
 
@@ -251,7 +252,7 @@ const Request = () => {
           <Form.Item name="download-buttons" label="Documentos :">
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {data.documents &&
-                data.documents?.map((document) => (
+                data.documents?.map((document: Document) => (
                   <Button
                     style={{ marginTop: 3 }}
                     icon={<DownloadOutlined />}

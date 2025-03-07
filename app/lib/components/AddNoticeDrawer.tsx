@@ -1,5 +1,5 @@
 'use client';
-import React, { SetStateAction, useRef, useState } from 'react';
+import React, { Dispatch, SetStateAction, useRef, useState } from 'react';
 import { Button, Drawer, Form, Input, Select, Space, message, Steps } from 'antd';
 import 'dayjs/locale/pt-br';
 import SelectCompany from './SelectCompany';
@@ -10,13 +10,13 @@ import { httpClient } from '../utils/httpClient';
 import { File } from '@/app/lib/types/upload.type';
 import Dragger from 'antd/es/upload/Dragger';
 import { InboxOutlined, PlusOutlined, StarOutlined } from '@ant-design/icons';
-import JoditEditor from 'jodit-react';
+// import JoditEditor from 'jodit-react';
 import SelectTag from './SelectTag';
 import AddTag from './AddTag';
 
 type DrawerComponentProps = {
   open: boolean;
-  setOpen: React.Dispatch<SetStateAction<boolean>>;
+  setOpen: Dispatch<SetStateAction<boolean>>;
 };
 
 export default function AddNoticeDrawer({ open, setOpen }: DrawerComponentProps) {
@@ -84,21 +84,21 @@ export default function AddNoticeDrawer({ open, setOpen }: DrawerComponentProps)
     <Drawer
       title="Criar aviso"
       width={720}
-      onClose={onClose}
+      // onClose={onClose}
       open={open}
       styles={{ body: { paddingBottom: 80 } }}
       extra={
         <Space>
-          <Button onClick={onClose}>Cancelar</Button>
-          <Button onClick={handleNextStep} type="primary">
-            {isMutation ? (
-              <PulseLoader color="#fff" size={6} loading={true} />
-            ) : current === 0 ? (
-              'Próximo'
-            ) : (
-              'Enviar'
-            )}
-          </Button>
+          {/* <Button onClick={onClose}>Cancelar</Button> */}
+          {/* <Button onClick={handleNextStep} type="primary"> */}
+          {/*   {isMutation ? ( */}
+          {/*     <PulseLoader color="#fff" size={6} loading={true} /> */}
+          {/*   ) : current === 0 ? ( */}
+          {/*     'Próximo' */}
+          {/*   ) : ( */}
+          {/*     'Enviar' */}
+          {/*   )} */}
+          {/* </Button> */}
         </Space>
       }>
       <Form layout="vertical" hideRequiredMark>
@@ -130,13 +130,13 @@ export default function AddNoticeDrawer({ open, setOpen }: DrawerComponentProps)
           name="text"
           label="Aviso"
           rules={[{ required: true, message: 'Preencha o aviso' }]}>
-          <JoditEditor
-            ref={editor}
-            value={text}
-            config={config}
-            onBlur={(event) => setText(event)}
-            onChange={(newContent) => {}}
-          />
+          {/* <JoditEditor */}
+          {/*   ref={editor} */}
+          {/*   value={text} */}
+          {/*   config={config} */}
+          {/*   onBlur={(event) => setText(event)} */}
+          {/*   onChange={(newContent) => {}} */}
+          {/* /> */}
         </Form.Item>
         <Form.Item name="upload-document" label="Anexar um documento">
           <Dragger

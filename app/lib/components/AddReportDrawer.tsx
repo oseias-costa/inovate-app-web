@@ -10,7 +10,7 @@ import { httpClient } from '../utils/httpClient';
 import { InboxOutlined, StarOutlined } from '@ant-design/icons';
 import Dragger from 'antd/es/upload/Dragger';
 import { useUser } from './UserProvider';
-import JoditEditor from 'jodit-react';
+// import JoditEditor from 'jodit-react';
 import AddTag from './AddTag';
 
 type DrawerComponentProps = {
@@ -127,13 +127,13 @@ export default function AddReportDrawer({ open, setOpen }: DrawerComponentProps)
           name="text"
           label="Descrição"
           rules={[{ required: true, message: 'Preencha uma descrição' }]}>
-          <JoditEditor
-            ref={editor}
-            value={text}
-            config={config}
-            onBlur={(event) => setText(event)}
-            onChange={(newContent) => {}}
-          />{' '}
+          {/* <JoditEditor */}
+          {/*   ref={editor} */}
+          {/*   value={text} */}
+          {/*   config={config} */}
+          {/*   onBlur={(event) => setText(event)} */}
+          {/*   onChange={(newContent) => {}} */}
+          {/* /> */}
         </Form.Item>
         <AddTag tag={tag} setTag={setTag} type="REPORT" current={current} />
         <Form.Item name="upload-document" label="Anexar um documento">
@@ -142,7 +142,7 @@ export default function AddReportDrawer({ open, setOpen }: DrawerComponentProps)
             name="file"
             action={`http://localhost:3009/document/upload/${id}?name=${file?.name}&mimeType=${file?.type}&type=REPORT&size=${file?.size}`}
             headers={{
-              Authorization: `Bearer ${localStorage.getItem('token')}`,
+              Authorization: `Bearer ${window?.localStorage.getItem('token')}`,
             }}
             beforeUpload={(file) => {
               const uploadFile = file as unknown as File;
